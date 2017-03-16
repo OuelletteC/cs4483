@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -28,34 +29,49 @@ public class PlayScreen implements Screen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		renderer.setView(camera); //Tell the renderer to use the camera we made.
-		renderer.render(); //render it all!
+		camera.position.set(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2, 0);
+		camera.update();
 		
+		renderer.setView(camera); //Tell the renderer to use the camera we made.
+		
+		/**THIS IS IMPORTANT!! We need to pass an array of layers to the renderer, so it knows what order to render the layers in. So its very important, in Tiled
+		/to keep layers organized and neat.*/
 		renderer.getBatch().begin();
+		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Background")); //Renders the background of our Tiled maps
+				
+	    //Renders the player. 		 
 		player.draw(renderer.getBatch());
+		
+		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		renderer.getBatch().end();
 	}
 	
 	@Override
 	public void resize(int width, int height)
 	{
-		camera.viewportWidth = width;
-		camera.viewportHeight = height;
-		camera.update();
+		/*
+		 * The viewport is gonna help us focus in closer to the game, so we dont have a zoomed out game. 
+		 * */
+		camera.viewportWidth = width / 2;
+		camera.viewportHeight = height / 2;
+		
+		//camera.update(); Dont need to update the camera since we do so in the render function, as the player is not being followe by the camera.
 	}
 
 	@Override
 	public void show()
 	{
-		map = new TmxMapLoader().load("World1.tmx"); //Create the map
+		map = new TmxMapLoader().load("Stage1_a.tmx"); //Create the map
 		
 		renderer = new OrthogonalTiledMapRenderer(map); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
 		
 		Vector2 spawnPoint = new Vector2(128, 160);
-		player = new Player(new Sprite(new Texture("playerTest.png")), spawnPoint ); //Creates player object with base sprite batch and spawn point
-		player.setPosition(spawnPoint.x, spawnPoint.y); 
+		
+		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
+		player = new Player(new Sprite(new Texture("playerTest.png")), spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
+		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
 		
