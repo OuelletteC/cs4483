@@ -59,6 +59,9 @@ public class PlayScreen implements Screen
 		
 		if(this.debug == true) {
 			spriteBatch.begin();
+			font.draw(spriteBatch, "x = " + player.getX(), 10, 50);
+			font.draw(spriteBatch, "y = " + player.getY(), 150, 50);
+			
 			font.draw(spriteBatch, "isFacingRight = " + player.getFacingRight(), 10, 30);
 			font.draw(spriteBatch, "State = " + player.getState(), 150, 30);
 			spriteBatch.end();
