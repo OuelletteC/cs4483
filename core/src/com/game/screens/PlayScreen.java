@@ -1,6 +1,5 @@
 package com.game.screens;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +11,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.BasicEnemy;
+import com.game.IntermediateEnemy;
 import com.game.Player;
 
 public class PlayScreen implements Screen
@@ -20,7 +21,10 @@ public class PlayScreen implements Screen
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	
-	private Player player;
+	public static Player player;
+	
+	private BasicEnemy basicEnemy1;
+	private IntermediateEnemy intEnemy1;
 	
 
 	@Override
@@ -42,6 +46,10 @@ public class PlayScreen implements Screen
 	    //Renders the player. 		 
 		player.draw(renderer.getBatch());
 		
+		// Space to render enemies
+		basicEnemy1.draw(renderer.getBatch());
+		intEnemy1.draw(renderer.getBatch());
+				
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		renderer.getBatch().end();
 	}
@@ -74,6 +82,14 @@ public class PlayScreen implements Screen
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
+		
+		// Creating enemies here
+		basicEnemy1 = new BasicEnemy(new Sprite(new Texture("playerTest.png")), new Vector2(64,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		basicEnemy1.setPosition(64, 160);
+		
+		intEnemy1 = new IntermediateEnemy(new Sprite(new Texture("playerTest.png")), new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		intEnemy1.setPosition(256, 160);
+		
 		
 		
 	}
