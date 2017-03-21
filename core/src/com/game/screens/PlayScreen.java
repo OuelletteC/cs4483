@@ -30,7 +30,7 @@ public class PlayScreen implements Screen
 	private BasicEnemy basicEnemy1;
 	private IntermediateEnemy intEnemy1;
 	
-	private Player player;
+	//private Player player;
 	private Sprite sb = new Sprite(new Texture("playerTest.png"));
 
 	public PlayScreen(boolean debug) {
