@@ -20,7 +20,7 @@ import static com.game.Constants.PPM;
 
 public class Application extends Game { //As far as I can tell, this is our "main" that isnt quite called main
 
-    private boolean DEBUG = false;
+    private boolean DEBUG = true;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
     private OrthographicCamera camera;
@@ -33,7 +33,7 @@ public class Application extends Game { //As far as I can tell, this is our "mai
     @Override
     public void create ()
     {
-    	setScreen(new PlayScreen());
+    	setScreen(new PlayScreen(DEBUG));
     }
     
     @Override
@@ -52,15 +52,15 @@ public class Application extends Game { //As far as I can tell, this is our "mai
     public void dispose() {
         super.dispose();
     }
-
-//    public void update(float delta) {
-//        world.step(1 / 60f, 6, 2);
-//
-//        inputUpdate(delta);
-//        cameraUpdate(delta);
-//    }
-
-
+    /*
+     * public void update(float delta) {
+     * 	world.step(1 / 60f, 6, 2);
+     * 	inputUpdate(delta);
+     *	cameraUpdate(delta);
+     * }
+     */ 
+    
+    /* == DEPRECATED ==
     public void inputUpdate(float delta) {
         int horizontalForce = 0;
 
@@ -77,6 +77,7 @@ public class Application extends Game { //As far as I can tell, this is our "mai
 
         player.setLinearVelocity(horizontalForce * 5, player.getLinearVelocity().y); //Updates player body linear velocity based on last key input
     }
+    */
 
     public void cameraUpdate(float delta) {
         Vector3 position = camera.position;

@@ -6,7 +6,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -20,12 +22,21 @@ public class PlayScreen implements Screen
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	
-	private Player player;
+	private boolean debug;
 	
+	private Player player;
+	private Sprite sb = new Sprite(new Texture("playerTest.png"));
+
+	public PlayScreen(boolean debug) {
+		this.debug = debug;
+	}
 
 	@Override
 	public void render(float delta)
 	{
+		BitmapFont font = new BitmapFont();
+		SpriteBatch spriteBatch = new SpriteBatch();
+		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -38,12 +49,20 @@ public class PlayScreen implements Screen
 		/to keep layers organized and neat.*/
 		renderer.getBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Background")); //Renders the background of our Tiled maps
-				
+		
 	    //Renders the player. 		 
 		player.draw(renderer.getBatch());
 		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
+		
 		renderer.getBatch().end();
+		
+		if(this.debug == true) {
+			spriteBatch.begin();
+			font.draw(spriteBatch, "isFacingRight = " + player.getFacingRight(), 10, 30);
+			font.draw(spriteBatch, "State = " + player.getState(), 150, 30);
+			spriteBatch.end();
+		}
 	}
 	
 	@Override
@@ -70,7 +89,7 @@ public class PlayScreen implements Screen
 		Vector2 spawnPoint = new Vector2(128, 160);
 		
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
-		player = new Player(new Sprite(new Texture("playerTest.png")), spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
+		player = new Player(sb, spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
