@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -27,7 +29,7 @@ public class Player extends Sprite implements InputProcessor
 	
 	private PlayerState state;
 	
-	private Sprite sb = new Sprite(new Texture("polarity_mc_turnarnound-sheet.png"));
+	private TextureRegion turnaround = new TextureRegion(new Texture("polarity_mc_turnarnound-sheet.png"));
 	
 	public Player(Sprite sprite, Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
 	{
@@ -39,6 +41,25 @@ public class Player extends Sprite implements InputProcessor
 	
 	public void draw(Batch batch)
 	{
+		Animation anim = null;
+		boolean loop = true;
+		
+		switch(this.state) {
+		// draw contingent on the isFacingRight flag
+		
+		case IDLE:
+			// do we even have an idle animation...?
+			break;
+		case WALKING:
+			// play the walking animation
+			break;
+		case JUMPING:
+			// play the spinning animation lol
+			break;
+		default:
+			break;
+		}
+		
 		update(Gdx.graphics.getDeltaTime());
 		super.draw(batch);
 	}
