@@ -98,10 +98,18 @@ public class Player implements InputProcessor
 			}
 		}
 		
+		TextureRegion[] runningFrames2 = new TextureRegion[8 * 1];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 8; j++) {
+				runningFrames2[index++] = runningFrames[i][j];
+			}
+		}
+		
 		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
 		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);
 		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
-		//this.runningAnim = new Animation(0.1f, runningFrames);
+		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
 	}
 	
 	public TextureRegion drawPlayer()
@@ -134,6 +142,17 @@ public class Player implements InputProcessor
 		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
+		
+		if(this.isFacingRight == false) {
+			if(!currentFrame.isFlipX()) {
+				currentFrame.flip(true, false);
+			}
+		}
+		else {
+			if(currentFrame.isFlipX()) {
+				currentFrame.flip(true, false);
+			}
+		}
 		
 		return currentFrame;
 	}
