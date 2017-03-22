@@ -58,18 +58,8 @@ public class PlayScreen implements Screen
 		
 	    //Renders the player 		 
 		TextureRegion tr = player.drawPlayer();
-		
-		boolean flip = player.getFacingRight();
-		
-		if (flip == true) {
-			renderer.getBatch().draw(tr, player.getX(), player.getY());
-		}
-		else {
-			//renderer.getBatch().draw(tr, flip ? player.getX() + player.getWidth() : player.getX(),
-			//		player.getY(), flip ? player.getWidth() : player.getWidth(), player.getHeight());
 			
-			renderer.getBatch().draw(tr, player.getX(), player.getY());
-		}
+		renderer.getBatch().draw(tr, player.getX(), player.getY());
 		
 		
 		// Space to render enemies

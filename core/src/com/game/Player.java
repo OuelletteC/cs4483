@@ -5,9 +5,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
@@ -47,7 +44,6 @@ public class Player implements InputProcessor
 	
 	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
 	{
-		//super(sprite); //how the player looks
 		this.collisionLayer = collisionLayer;
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
@@ -61,6 +57,11 @@ public class Player implements InputProcessor
 		this.height = idle.getHeight();
 	}
 	
+	
+	/*
+	 * Private method that is called when the Player object is created.
+	 * Initializes all of the animation fields, so that they can be used.
+	 */
 	private void loadTextures() {
 		this.idle = new Texture("playerTest.png");
 		this.turnaround = new Texture("polarity_mc_turnarnound-sheet.png");
@@ -112,6 +113,15 @@ public class Player implements InputProcessor
 		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
 	}
 	
+	/*
+	 * drawPlayer()
+	 * 
+	 * Selects the player's animation based on the current state and
+	 * the stateTime, which are decided by calling update().
+	 * 
+	 * Returns the currentFrame, a TextureRegion, that will be passed
+	 * to the Batch in PlayScreen.java.
+	 */
 	public TextureRegion drawPlayer()
 	{
 		Animation<TextureRegion> anim = null;
@@ -159,7 +169,7 @@ public class Player implements InputProcessor
 	
     public void update(float delta) 
     {
-    	stateTime += delta;
+    	stateTime += delta; // update the stateTime based on the delta
     	
         velocity.y -= gravity * delta; //applies gravity to the y velocity for each unit of time (delta) that passes
         
@@ -285,15 +295,11 @@ public class Player implements InputProcessor
 			velocity.x = -movementSpeed;
 			this.state = PlayerState.WALKING;
 			this.isFacingRight = false;
-			
-			// System.out.println("left");
 			break;
 		case Keys.RIGHT:
 			velocity.x = movementSpeed;
 			this.state = PlayerState.WALKING;
 			this.isFacingRight = true;
-			
-			// System.out.println("right");
 			break;
 		case Keys.UP:
 			if(canJump) {
