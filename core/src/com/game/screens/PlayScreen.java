@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -25,13 +26,12 @@ public class PlayScreen implements Screen
 	
 
 	private boolean debug;
-	public static Player player;
+	public static Player player; // static because the enemy class needs to have access to player coordinates
 	
 	private BasicEnemy basicEnemy1;
 	private IntermediateEnemy intEnemy1;
 	
-	//private Player player;
-	private Sprite sb = new Sprite(new Texture("playerTest.png"));
+	// private Sprite sb = new Sprite(new Texture("playerTest.png"));
 
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -56,13 +56,26 @@ public class PlayScreen implements Screen
 		renderer.getBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Background")); //Renders the background of our Tiled maps
 		
-	    //Renders the player. 		 
-		player.draw(renderer.getBatch());
+	    //Renders the player 		 
+		TextureRegion tr = player.drawPlayer();
+		
+		boolean flip = player.getFacingRight();
+		
+		if (flip == true) {
+			renderer.getBatch().draw(tr, player.getX(), player.getY());
+		}
+		else {
+			//renderer.getBatch().draw(tr, flip ? player.getX() + player.getWidth() : player.getX(),
+			//		player.getY(), flip ? player.getWidth() : player.getWidth(), player.getHeight());
+			
+			renderer.getBatch().draw(tr, player.getX(), player.getY());
+		}
+		
 		
 		// Space to render enemies
 		basicEnemy1.draw(renderer.getBatch());
 		intEnemy1.draw(renderer.getBatch());
-				
+		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		
 		renderer.getBatch().end();
@@ -102,7 +115,7 @@ public class PlayScreen implements Screen
 		Vector2 spawnPoint = new Vector2(128, 160);
 		
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
-		player = new Player(sb, spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
+		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
@@ -144,7 +157,7 @@ public class PlayScreen implements Screen
 	{
 		map.dispose();
 		renderer.dispose();
-		player.getTexture().dispose();
+		//player.getTexture().dispose();
 		
 	}
 

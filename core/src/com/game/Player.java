@@ -12,15 +12,17 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
-public class Player extends Sprite implements InputProcessor
+public class Player implements InputProcessor
 {
 	public enum PlayerState {
 		IDLE, WALKING, JUMPING, FALLING, CLING, HOVER
 	}
 	
+	private float x, y;
+	private float width, height;
+	
 	/** Movement vector storing x/y velocity */
 	private Vector2 velocity = new Vector2(0, -1);
-	private Vector2 spawn;// = new Vector2();
 	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
 	
@@ -29,43 +31,136 @@ public class Player extends Sprite implements InputProcessor
 	
 	private PlayerState state;
 	
-	private TextureRegion turnaround = new TextureRegion(new Texture("polarity_mc_turnarnound-sheet.png"));
+	private float stateTime = 0;
 	
-	public Player(Sprite sprite, Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
+	/* =========== ANIMATIONS =========== */
+	private Texture idle;
+	private Texture turnaround;
+	private Texture walking;
+	private Texture running;
+	
+	private Animation<TextureRegion> idleAnim;
+	private Animation<TextureRegion> turnaroundAnim;
+	private Animation<TextureRegion> walkingAnim;
+	private Animation<TextureRegion> runningAnim;
+	/* ================================== */
+	
+	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
 	{
-		super(sprite); //how the player looks
+		//super(sprite); //how the player looks
 		this.collisionLayer = collisionLayer;
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
+		
+		this.x = spawnPoint.x;
+		this.y = spawnPoint.y;
+		
+		loadTextures();
+		
+		this.width = idle.getWidth();
+		this.height = idle.getHeight();
 	}
 	
-	public void draw(Batch batch)
+	private void loadTextures() {
+		this.idle = new Texture("playerTest.png");
+		this.turnaround = new Texture("polarity_mc_turnarnound-sheet.png");
+		this.walking = new Texture("polarity_pc_walk-sheet.png");
+		this.running = new Texture("polarity_pc_run-bounce-sheet.png");
+		
+		TextureRegion[][] idleFrames = TextureRegion.split(idle, idle.getWidth(), idle.getHeight());
+		TextureRegion[][] turnaroundFrames = TextureRegion.split(turnaround, (turnaround.getWidth() / 8), turnaround.getHeight());
+		TextureRegion[][] walkingFrames = TextureRegion.split(walking, (walking.getWidth() / 4), walking.getHeight());
+		TextureRegion[][] runningFrames = TextureRegion.split(running, (running.getWidth() / 8), running.getHeight());
+		
+		TextureRegion[] idleFrames2 = new TextureRegion[1 * 1];
+		int index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 1; j++) {
+				idleFrames2[index++] = idleFrames[i][j];
+			}
+		}
+		
+		
+		TextureRegion[] turnaroundFrames2 = new TextureRegion[8 * 1];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 8; j++) {
+				turnaroundFrames2[index++] = turnaroundFrames[i][j];
+			}
+		}
+		
+		
+		TextureRegion[] walkingFrames2 = new TextureRegion[4 * 1];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 4; j++) {
+				walkingFrames2[index++] = walkingFrames[i][j];
+			}
+		}
+		
+		TextureRegion[] runningFrames2 = new TextureRegion[8 * 1];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 8; j++) {
+				runningFrames2[index++] = runningFrames[i][j];
+			}
+		}
+		
+		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
+		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);
+		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
+		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
+	}
+	
+	public TextureRegion drawPlayer()
 	{
-		Animation anim = null;
+		Animation<TextureRegion> anim = null;
 		boolean loop = true;
+		
+		update(Gdx.graphics.getDeltaTime());
 		
 		switch(this.state) {
 		// draw contingent on the isFacingRight flag
 		
 		case IDLE:
 			// do we even have an idle animation...?
+			anim = this.idleAnim;
 			break;
 		case WALKING:
 			// play the walking animation
+			anim = this.walkingAnim;
 			break;
 		case JUMPING:
 			// play the spinning animation lol
+			anim = this.turnaroundAnim;
 			break;
 		default:
+			anim = this.idleAnim;
 			break;
 		}
 		
-		update(Gdx.graphics.getDeltaTime());
-		super.draw(batch);
+		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);
+		this.width = currentFrame.getRegionWidth();
+		this.height = currentFrame.getRegionHeight();
+		
+		if(this.isFacingRight == false) {
+			if(!currentFrame.isFlipX()) {
+				currentFrame.flip(true, false);
+			}
+		}
+		else {
+			if(currentFrame.isFlipX()) {
+				currentFrame.flip(true, false);
+			}
+		}
+		
+		return currentFrame;
 	}
 	
     public void update(float delta) 
     {
+    	stateTime += delta;
+    	
         velocity.y -= gravity * delta; //applies gravity to the y velocity for each unit of time (delta) that passes
         
     	//Objects have a terminal velocity when gravity is applied, so this handles that
@@ -222,11 +317,11 @@ public class Player extends Sprite implements InputProcessor
 		{
 		case Keys.LEFT:
 			velocity.x = 0;
-			this.state = PlayerState.IDLE;
+			//this.state = PlayerState.IDLE;
 			break;
 		case Keys.RIGHT:
 			velocity.x = 0;
-			this.state = PlayerState.IDLE;
+			//this.state = PlayerState.IDLE;
 			break;
 		case Keys.UP:
 			if(velocity.y > 0)
@@ -345,5 +440,41 @@ public class Player extends Sprite implements InputProcessor
 	public PlayerState getState() {
 		return this.state;
 	}
-
+	
+	public void setX(float newX) {
+		this.x = newX;
+	}
+	
+	public float getX() {
+		return this.x;
+	}
+	
+	public void setY(float newY) {
+		this.y = newY;
+	}
+	
+	public float getY() {
+		return this.y;
+	}
+	
+	public void setPosition(float theX, float theY) {
+		this.x = theX;
+		this.y = theY;
+	}
+	
+	public void setWidth(float width) {
+		this.width = width;
+	}
+	
+	public float getWidth() {
+		return this.width;
+	}
+	
+	public void setHeight(float height) {
+		this.height = height;
+	}
+	
+	public float getHeight() {
+		return this.height;
+	}
 }
