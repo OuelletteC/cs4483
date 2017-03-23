@@ -12,13 +12,13 @@ import com.game.screens.PlayScreen;
 
 public class IntermediateEnemy extends Enemy {
 	
-private boolean isFacingRight;
-
-/* =========== ANIMATIONS =========== */
-private Texture walking;
-
-private Animation<TextureRegion> walkingAnim;
-/* ================================== */
+	private boolean isFacingRight;
+	
+	/* =========== ANIMATIONS =========== */
+	private Texture walking;
+	
+	private Animation<TextureRegion> walkingAnim;
+	/* ================================== */
 	
 	public IntermediateEnemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
 		super(spawnPoint, collisionLayer, moveSpeed);

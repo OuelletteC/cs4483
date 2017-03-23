@@ -14,9 +14,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.game.BasicEnemy;
-import com.game.IntermediateEnemy;
-import com.game.Player;
+
+import com.game.*;
 
 public class PlayScreen implements Screen
 {
@@ -30,6 +29,7 @@ public class PlayScreen implements Screen
 	
 	private BasicEnemy basicEnemy1;
 	private IntermediateEnemy intEnemy1;
+	private FlameEye fE1;
 	
 	// private Sprite sb = new Sprite(new Texture("playerTest.png"));
 
@@ -69,6 +69,8 @@ public class PlayScreen implements Screen
 		TextureRegion trE2 = intEnemy1.drawEnemy();
 		renderer.getBatch().draw(trE2, intEnemy1.getX(), intEnemy1.getY());
 		
+		TextureRegion trFE = fE1.drawEnemy();
+		renderer.getBatch().draw(trFE, fE1.getX(), fE1.getY());
 		//basicEnemy1.draw(renderer.getBatch());
 		//intEnemy1.draw(renderer.getBatch());
 		
@@ -123,8 +125,8 @@ public class PlayScreen implements Screen
 		intEnemy1 = new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
 		intEnemy1.setPosition(256, 160);
 		
-		
-		
+		fE1 = new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		fE1.setPosition(160,160);
 	}
 	
 	@Override
