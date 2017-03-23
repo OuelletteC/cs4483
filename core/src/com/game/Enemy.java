@@ -3,28 +3,30 @@ package com.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class Enemy extends Sprite {
-
+public abstract class Enemy {
+	
+	protected float x, y;
+	protected float width, height;
+	
 	protected Vector2 velocity = new Vector2(0, -1);
-	protected Vector2 spawn = new Vector2();
+	protected Vector2 spawn;
 	protected float movementSpeed, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	protected TiledMapTileLayer collisionLayer;
-	protected boolean canJump = false;
 	
-	public Enemy(Sprite sprite, Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
-		super(sprite); //how the player looks
+	protected boolean canJump = false;
+	protected float stateTime = 0;
+	
+	public Enemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
 		this.collisionLayer = collisionLayer;
 		spawn = spawnPoint;
 		movementSpeed = moveSpeed;
 	}
 	
-	public void draw(Batch spriteBatch) {
-		super.draw(spriteBatch);
-	}
-	
+	public abstract TextureRegion drawEnemy();
 	public abstract void update(float delta);
 	
 	public void collision(float delta) {
@@ -133,6 +135,42 @@ public abstract class Enemy extends Sprite {
         
 	}
 	
+	public void setX(float newX) {
+		this.x = newX;
+	}
+	
+	public float getX() {
+		return this.x;
+	}
+	
+	public void setY(float newY) {
+		this.y = newY;
+	}
+	
+	public float getY() {
+		return this.y;
+	}
+	
+	public void setPosition(float theX, float theY) {
+		this.x = theX;
+		this.y = theY;
+	}
+	
+	public void setWidth(float width) {
+		this.width = width;
+	}
+	
+	public float getWidth() {
+		return this.width;
+	}
+	
+	public void setHeight(float height) {
+		this.height = height;
+	}
+	
+	public float getHeight() {
+		return this.height;
+	}
 }
 
 
