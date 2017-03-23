@@ -26,7 +26,7 @@ public abstract class Enemy {
 		movementSpeed = moveSpeed;
 	}
 	
-	public abstract TextureRegion drawEnemy();
+	public abstract void drawEnemy(Batch batch, boolean debug);
 	public abstract void update(float delta);
 	
 	public void collision(float delta) {

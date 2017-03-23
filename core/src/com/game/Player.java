@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
@@ -126,16 +127,13 @@ public class Player implements InputProcessor
 	 * Returns the currentFrame, a TextureRegion, that will be passed
 	 * to the Batch in PlayScreen.java.
 	 */
-	public TextureRegion drawPlayer()
-	{
+	public void drawPlayer(Batch batch, boolean debug) {
 		Animation<TextureRegion> anim = null;
 		boolean loop = true;
 		
 		update(Gdx.graphics.getDeltaTime());
 		
-		switch(this.state) {
-		// draw contingent on the isFacingRight flag
-		
+		switch(this.state) {		
 		case IDLE:
 			// do we even have an idle animation...?
 			anim = this.idleAnim;
@@ -157,6 +155,7 @@ public class Player implements InputProcessor
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
 		
+		// draw contingent on the isFacingRight flag
 		if(this.isFacingRight == false) {
 			if(!currentFrame.isFlipX()) {
 				currentFrame.flip(true, false);
@@ -168,7 +167,7 @@ public class Player implements InputProcessor
 			}
 		}
 		
-		return currentFrame;
+		batch.draw(currentFrame, this.x, this.y);
 	}
 	
     public void update(float delta) 

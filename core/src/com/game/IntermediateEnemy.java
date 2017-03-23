@@ -44,7 +44,7 @@ public class IntermediateEnemy extends Enemy {
 		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
 	}
 
-	public TextureRegion drawEnemy() {
+	public void drawEnemy(Batch batch, boolean debug) {
 		Animation<TextureRegion> anim = null;
 		boolean loop = true;
 		
@@ -67,7 +67,7 @@ public class IntermediateEnemy extends Enemy {
 			}
 		}
 		
-		return currentFrame;
+		batch.draw(currentFrame, this.x, this.y);
 	}
 
 	public void update(float delta) {

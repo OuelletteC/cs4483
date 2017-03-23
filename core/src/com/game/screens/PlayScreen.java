@@ -55,22 +55,19 @@ public class PlayScreen implements Screen
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Background")); //Renders the background of our Tiled maps
 		
 	    //Renders the player 		 
-		TextureRegion tr = player.drawPlayer();
+		//TextureRegion tr = 
+		player.drawPlayer(renderer.getBatch(), this.debug);
 			
-		renderer.getBatch().draw(tr, player.getX(), player.getY());
+		//renderer.getBatch().draw(tr, player.getX(), player.getY());
 		
 		
 		// Space to render enemies
-		TextureRegion trE1 = basicEnemy1.drawEnemy();
-		renderer.getBatch().draw(trE1, basicEnemy1.getX(), basicEnemy1.getY());
+		basicEnemy1.drawEnemy(renderer.getBatch(), this.debug);
 		
-		TextureRegion trE2 = intEnemy1.drawEnemy();
-		renderer.getBatch().draw(trE2, intEnemy1.getX(), intEnemy1.getY());
 		
-		TextureRegion trFE = fE1.drawEnemy();
-		renderer.getBatch().draw(trFE, fE1.getX(), fE1.getY());
-		//basicEnemy1.draw(renderer.getBatch());
-		//intEnemy1.draw(renderer.getBatch());
+		intEnemy1.drawEnemy(renderer.getBatch(), this.debug);
+		
+		fE1.drawEnemy(renderer.getBatch(), this.debug);
 		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		

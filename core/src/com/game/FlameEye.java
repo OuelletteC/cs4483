@@ -3,6 +3,7 @@ package com.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
@@ -42,7 +43,7 @@ public class FlameEye extends Enemy {
 		TextureRegion[] eyeFrames2 = new TextureRegion[24 * 1];
 		index = 0;
 		for (int i = 0; i < 1; i++) {
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < 24; j++) {
 				eyeFrames2[index++] = eyeFrames[i][j];
 			}
 		}
@@ -51,19 +52,31 @@ public class FlameEye extends Enemy {
 		this.eyeAnim = new Animation<TextureRegion>(0.1f, eyeFrames2);
 	}
 
-	public TextureRegion drawEnemy() {
+	public void drawEnemy(Batch batch, boolean debug) {
 		Animation<TextureRegion> anim = null;
+		Animation<TextureRegion> anim2 = null;
+		
 		boolean loop = true;
 		
 		update(Gdx.graphics.getDeltaTime());
 		
 		anim = this.flameAnim;
+		anim2 = this.eyeAnim;
 		
-		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);
-		this.width = currentFrame.getRegionWidth();
-		this.height = currentFrame.getRegionHeight();
+		TextureRegion currentFlame = anim.getKeyFrame(stateTime, loop);
+		this.width = currentFlame.getRegionWidth();
+		this.height = currentFlame.getRegionHeight();
 		
-		return currentFrame;
+		TextureRegion currentEye = anim2.getKeyFrame(stateTime, loop);
+		
+		batch.draw(currentFlame, this.x, this.y);
+		
+		try {
+		batch.draw(currentEye, this.x, this.y);
+		}
+		catch(NullPointerException e) {
+			System.out.print("null ptr");
+		}
 	}
 
 	public void update(float delta) {
