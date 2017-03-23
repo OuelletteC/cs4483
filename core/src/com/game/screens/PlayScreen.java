@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -23,13 +20,16 @@ public class PlayScreen implements Screen
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	
-
 	private boolean debug;
 	public static Player player; // static because the enemy class needs to have access to player coordinates
 	
+	private Enemy[] eArray = new Enemy[3]; // TODO: untangle the eArray further
+	
+	/*
 	private BasicEnemy basicEnemy1;
 	private IntermediateEnemy intEnemy1;
 	private FlameEye fE1;
+	*/
 	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -54,20 +54,15 @@ public class PlayScreen implements Screen
 		renderer.getBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Background")); //Renders the background of our Tiled maps
 		
-	    //Renders the player 		 
-		//TextureRegion tr = 
-		player.drawPlayer(renderer.getBatch(), this.debug);
-			
-		//renderer.getBatch().draw(tr, player.getX(), player.getY());
-		
 		
 		// Space to render enemies
-		basicEnemy1.drawEnemy(renderer.getBatch(), this.debug);
+		for(int i = 0; i < eArray.length; i++) {
+			eArray[i].drawEnemy(renderer.getBatch(), this.debug);
+		}
 		
-		
-		intEnemy1.drawEnemy(renderer.getBatch(), this.debug);
-		
-		fE1.drawEnemy(renderer.getBatch(), this.debug);
+	    //Renders the player
+		player.update(Gdx.graphics.getDeltaTime(), eArray);
+		player.drawPlayer(renderer.getBatch(), this.debug);
 		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		
@@ -82,6 +77,10 @@ public class PlayScreen implements Screen
 			font.draw(spriteBatch, "isFacingRight = " + player.getFacingRight(), 10, 30);
 			font.draw(spriteBatch, "State = " + player.getState(), 150, 30);
 			font.draw(spriteBatch, "HP = " + player.getHealthPoints(), 300, 30);
+			font.draw(spriteBatch, "isInvincible = " + player.isInvincible(), 450, 30);
+			if(player.isInvincible()) {
+				font.draw(spriteBatch, "IFRAMES = " + player.getInvincibleTimer(), 600, 30);
+			}
 			spriteBatch.end();
 		}
 	}
@@ -107,7 +106,7 @@ public class PlayScreen implements Screen
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
 		
-		Vector2 spawnPoint = new Vector2(128, 160);
+		Vector2 spawnPoint = new Vector2(24, 160);
 		
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
 		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
@@ -117,14 +116,14 @@ public class PlayScreen implements Screen
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
 		
 		// Creating enemies here
-		basicEnemy1 = new BasicEnemy(new Vector2(64,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
-		basicEnemy1.setPosition(64, 160);
+		eArray[0] = new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		eArray[0].setPosition(128, 160);
 		
-		intEnemy1 = new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
-		intEnemy1.setPosition(256, 160);
+		eArray[1] = new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		eArray[1].setPosition(256, 160);
 		
-		fE1 = new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
-		fE1.setPosition(160,160);
+		eArray[2] = new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		eArray[2].setPosition(160,160);
 	}
 	
 	@Override

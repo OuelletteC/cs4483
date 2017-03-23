@@ -17,7 +17,7 @@ public abstract class Enemy {
 	protected float movementSpeed, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	protected TiledMapTileLayer collisionLayer;
 	
-	protected boolean canJump = false;
+	protected boolean enemyFlag = true;
 	protected float stateTime = 0;
 	
 	public Enemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
@@ -109,9 +109,7 @@ public abstract class Enemy {
         	
         	//bottom right
             	if(!collidedY)
-            		collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");     
-            	
-            	canJump = collidedY;   	 
+            		collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
         }
         else if(velocity.y > 0) //jumping up into
         {
@@ -170,6 +168,10 @@ public abstract class Enemy {
 	
 	public float getHeight() {
 		return this.height;
+	}
+	
+	public boolean getEnemyFlag() {
+		return this.enemyFlag;
 	}
 }
 
