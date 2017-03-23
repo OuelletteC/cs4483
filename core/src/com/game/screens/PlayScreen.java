@@ -63,8 +63,14 @@ public class PlayScreen implements Screen
 		
 		
 		// Space to render enemies
-		basicEnemy1.draw(renderer.getBatch());
-		intEnemy1.draw(renderer.getBatch());
+		TextureRegion trE1 = basicEnemy1.drawEnemy();
+		renderer.getBatch().draw(trE1, basicEnemy1.getX(), basicEnemy1.getY());
+		
+		TextureRegion trE2 = intEnemy1.drawEnemy();
+		renderer.getBatch().draw(trE2, intEnemy1.getX(), intEnemy1.getY());
+		
+		//basicEnemy1.draw(renderer.getBatch());
+		//intEnemy1.draw(renderer.getBatch());
 		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("Foreground")); //Renders the foreground platforms
 		
@@ -111,10 +117,10 @@ public class PlayScreen implements Screen
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
 		
 		// Creating enemies here
-		basicEnemy1 = new BasicEnemy(new Sprite(new Texture("playerTest.png")), new Vector2(64,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		basicEnemy1 = new BasicEnemy(new Vector2(64,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
 		basicEnemy1.setPosition(64, 160);
 		
-		intEnemy1 = new IntermediateEnemy(new Sprite(new Texture("playerTest.png")), new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
+		intEnemy1 = new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) map.getLayers().get("Background"), 50);
 		intEnemy1.setPosition(256, 160);
 		
 		
