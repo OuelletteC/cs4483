@@ -31,8 +31,6 @@ public class PlayScreen implements Screen
 	private IntermediateEnemy intEnemy1;
 	private FlameEye fE1;
 	
-	// private Sprite sb = new Sprite(new Texture("playerTest.png"));
-
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
 	}
@@ -82,9 +80,11 @@ public class PlayScreen implements Screen
 			spriteBatch.begin();
 			font.draw(spriteBatch, "x = " + player.getX(), 10, 50);
 			font.draw(spriteBatch, "y = " + player.getY(), 150, 50);
+			font.draw(spriteBatch, "currentLayer = " + player.getCurrentLayer(), 300, 50);
 			
 			font.draw(spriteBatch, "isFacingRight = " + player.getFacingRight(), 10, 30);
 			font.draw(spriteBatch, "State = " + player.getState(), 150, 30);
+			font.draw(spriteBatch, "HP = " + player.getHealthPoints(), 300, 30);
 			spriteBatch.end();
 		}
 	}
@@ -115,6 +115,7 @@ public class PlayScreen implements Screen
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
 		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
+		player.setCurrentLayer(1);
 		
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
 		

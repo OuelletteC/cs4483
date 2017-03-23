@@ -27,6 +27,8 @@ public class Player implements InputProcessor
 	private boolean isFacingRight;
 	
 	private PlayerState state;
+	private int healthPoints;
+	private int currentLayer;
 	
 	private float stateTime = 0;
 	
@@ -47,6 +49,7 @@ public class Player implements InputProcessor
 		this.collisionLayer = collisionLayer;
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
+		this.healthPoints = 2;
 		
 		this.x = spawnPoint.x;
 		this.y = spawnPoint.y;
@@ -77,7 +80,8 @@ public class Player implements InputProcessor
 		int index = 0;
 		for (int i = 0; i < 1; i++) {
 			for (int j = 0; j < 1; j++) {
-				idleFrames2[index++] = idleFrames[i][j];
+				//idleFrames2[index++] = idleFrames[i][j];
+				idleFrames2[index++] = turnaroundFrames[i][1];
 			}
 		}
 		
@@ -482,5 +486,25 @@ public class Player implements InputProcessor
 	
 	public float getHeight() {
 		return this.height;
+	}
+
+
+	public int getHealthPoints() {
+		return healthPoints;
+	}
+
+
+	public void setHealthPoints(int healthPoints) {
+		this.healthPoints = healthPoints;
+	}
+
+
+	public int getCurrentLayer() {
+		return currentLayer;
+	}
+
+
+	public void setCurrentLayer(int currentLayer) {
+		this.currentLayer = currentLayer;
 	}
 }

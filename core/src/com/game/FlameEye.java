@@ -51,7 +51,6 @@ public class FlameEye extends Enemy {
 		this.eyeAnim = new Animation<TextureRegion>(0.1f, eyeFrames2);
 	}
 
-	@Override
 	public TextureRegion drawEnemy() {
 		Animation<TextureRegion> anim = null;
 		boolean loop = true;
@@ -67,11 +66,10 @@ public class FlameEye extends Enemy {
 		return currentFrame;
 	}
 
-	@Override
 	public void update(float delta) {
 		this.stateTime += delta;
 		
-		
+		// TODO: Implement behavior
 	}
 
 }
