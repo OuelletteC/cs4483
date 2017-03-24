@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -14,12 +15,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
+import com.game.screens.MainMenuScreen;
 import com.game.screens.PlayScreen;
 
 import static com.game.Constants.PPM;
 
 public class Application extends Game { //As far as I can tell, this is our "main" that isnt quite called main
-
+    public SpriteBatch batch;
     private boolean DEBUG = false;
     TiledMap tiledMap;
     TiledMapRenderer tiledMapRenderer;
@@ -33,7 +35,9 @@ public class Application extends Game { //As far as I can tell, this is our "mai
     @Override
     public void create ()
     {
-    	setScreen(new PlayScreen());
+    	batch = new SpriteBatch();
+    	this.setScreen(new MainMenuScreen(this));
+    	
     }
     
     @Override
