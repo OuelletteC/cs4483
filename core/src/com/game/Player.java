@@ -32,7 +32,7 @@ public class Player implements InputProcessor
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean onObject;
+	private boolean onObject, onObject2;
 	
 	private PlayerState state;
 	private int healthPoints;
@@ -199,7 +199,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false;
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
 			if(invincibleTimer <= 0) {
@@ -301,22 +301,6 @@ public class Player implements InputProcessor
 			setY(getY() + velocity.y * delta);
 			
 			//Checks to see if the player is currently on a tile which, when translated to the object layer, is a bubble tile. If so, set onObject to true
-			
-			if(isFacingRight)
-			{
-				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-			}
-			else if(!isFacingRight)
-			{
-				onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-			}
-			else
-			{
-				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-			}
 
 			// FALLING
 			if (velocity.y < 0) {
@@ -405,6 +389,40 @@ public class Player implements InputProcessor
 				velocity.x = 0;
 				
 			} //end of collision nightmare
+			
+			/**
+			 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
+			 * which end of their hitbox to use. This is so they can activate bubbles with the 'E' key in the KeyDown() function. 
+			 * 
+			 */
+			
+			if(isFacingRight) 
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
+			}
+			else if(!isFacingRight)
+			{
+				onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
+			}
+			else
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
+			}
 			
 			
 			// Update the PlayerState based on the resolution of the above 
@@ -515,7 +533,10 @@ public class Player implements InputProcessor
 				break;
 			case Keys.E:
 				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
-					currentLayer++;
+					currentLayer = 2;
+				
+				if(onObject2)
+					currentLayer = 3;
 				break;
 			}
 		}
