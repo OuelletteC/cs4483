@@ -46,11 +46,13 @@ public class Player implements InputProcessor
 	private Texture turnaround;
 	private Texture walking;
 	private Texture running;
+	private Texture clinging;
 	
 	private Animation<TextureRegion> idleAnim;
 	private Animation<TextureRegion> turnaroundAnim;
 	private Animation<TextureRegion> walkingAnim;
 	private Animation<TextureRegion> runningAnim;
+	private Animation<TextureRegion> clingAnim;
 	/* ================================== */
 	
 	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
@@ -82,11 +84,13 @@ public class Player implements InputProcessor
 		this.turnaround = new Texture("polarity_mc_turnarnound-sheet.png");
 		this.walking = new Texture("polarity_pc_walk-sheet.png");
 		this.running = new Texture("polarity_pc_run-bounce-sheet.png");
+		this.clinging = new Texture("Polarity_PC_Wall-Hang-Sheet.png");
 		
 		TextureRegion[][] idleFrames = TextureRegion.split(idle, idle.getWidth(), idle.getHeight());
 		TextureRegion[][] turnaroundFrames = TextureRegion.split(turnaround, (turnaround.getWidth() / 8), turnaround.getHeight());
 		TextureRegion[][] walkingFrames = TextureRegion.split(walking, (walking.getWidth() / 4), walking.getHeight());
 		TextureRegion[][] runningFrames = TextureRegion.split(running, (running.getWidth() / 8), running.getHeight());
+		TextureRegion[][] clingFrames = TextureRegion.split(clinging, clinging.getWidth(), clinging.getHeight());
 		
 		TextureRegion[] idleFrames2 = new TextureRegion[1 * 1];
 		int index = 0;
@@ -127,10 +131,14 @@ public class Player implements InputProcessor
 			}
 		}
 		
+		TextureRegion [] clingFrames2 = new TextureRegion[1];
+		clingFrames2[0] = clingFrames[0][0];
+		
 		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
 		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);
 		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
 		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
+		this.clingAnim = new Animation<TextureRegion>(0.1f, clingFrames2);
 	}
 	
 	/*
@@ -161,6 +169,10 @@ public class Player implements InputProcessor
 		case JUMPING:
 			// play the spinning animation lol
 			anim = this.turnaroundAnim;
+			break;
+		case CLING:
+			// play the cling animation
+			anim = this.clingAnim;
 			break;
 		default:
 			anim = this.idleAnim;
@@ -273,7 +285,7 @@ public class Player implements InputProcessor
 				setY(oldY);
 				setX(oldX);
 				velocity.y = 0;
-				velocity.x = 0;
+				//velocity.x = 0;
 				this.state = PlayerState.IDLE;
 			}
 
@@ -470,6 +482,7 @@ public class Player implements InputProcessor
 					gravity = 0;
 					velocity.y = 0;
 					timesJumped = 0;
+					state = PlayerState.CLING;
 				}
 				else
 				{
@@ -538,6 +551,7 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
+				currentLayer++;
 				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
 					currentLayer = 2;
 				
