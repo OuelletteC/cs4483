@@ -19,7 +19,7 @@ public class PlayScreen implements Screen
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
-	Vector2 spawnPoint = new Vector2(24, 160);
+	Vector2 spawnPoint = new Vector2(24, 400);
 	
 	private boolean debug;
 	public static Player player; // static because the enemy class needs to have access to player coordinates
@@ -107,13 +107,11 @@ public class PlayScreen implements Screen
 	@Override
 	public void show()
 	{
-		map = new TmxMapLoader().load("Stage1_a.tmx"); //Create the map
+		map = new TmxMapLoader().load("Stage2_a.tmx"); //Create the map
 		
 		renderer = new OrthogonalTiledMapRenderer(map); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
-		
-		//Vector2 spawnPoint = new Vector2(24, 160);
 		
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
 		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
