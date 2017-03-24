@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.screens.PlayScreen;
 
 public class FlameEye extends Enemy {
 	
@@ -32,6 +33,9 @@ public class FlameEye extends Enemy {
 		super(spawnPoint, collisionLayer, moveSpeed);
 		
 		this.state = FlameState.CLOSED;
+		
+		this.movementSpeed = 15;
+		this.gravity = 0;
 		
 		loadTextures();
 	}
@@ -94,7 +98,7 @@ public class FlameEye extends Enemy {
 		update(Gdx.graphics.getDeltaTime());
 		
 		anim = this.flameAnim;
-		anim2 = this.eyeClosingAnim;
+		anim2 = this.eyeOpenedAnim;
 		
 		TextureRegion currentFlame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFlame.getRegionWidth();
@@ -114,6 +118,34 @@ public class FlameEye extends Enemy {
 
 	public void update(float delta) {
 		this.stateTime += delta;
+		
+		float playerX = PlayScreen.player.getX();
+		float playerY = PlayScreen.player.getY();
+		float enemyX = getX();
+		float enemyY = getY();
+		
+		float visionRange = 100;
+		
+		float distanceBetweenX = playerX - enemyX;
+		float distanceBetweenY = playerY - enemyY;
+		
+		if (distanceBetweenX < visionRange && distanceBetweenX > -visionRange) {
+			if (distanceBetweenX > 0) {
+				velocity.x = movementSpeed;
+			}
+			else {
+				velocity.x = -movementSpeed;
+			}
+			
+			if(distanceBetweenY > 0) {
+				velocity.y = movementSpeed;
+			}
+			else {
+				velocity.y = -movementSpeed;
+			}
+		}
+		
+		super.collision(delta);
 		
 		// TODO: Implement behavior
 	}
