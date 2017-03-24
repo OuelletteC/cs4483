@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 public class FlameEye extends Enemy {
 	
 	private enum FlameState {
-		CLOSED, OPEN, OPENING
+		CLOSING, CLOSED, OPENING, OPEN
 	}
 	
 	private FlameState state;
@@ -21,6 +21,7 @@ public class FlameEye extends Enemy {
 	private Texture eye;
 
 	private Animation<TextureRegion> flameAnim;
+	private Animation<TextureRegion> eyeClosingAnim;
 	private Animation<TextureRegion> eyeClosedAnim;
 	private Animation<TextureRegion> eyeOpeningAnim;
 	private Animation<TextureRegion> eyeOpenedAnim;
@@ -50,16 +51,38 @@ public class FlameEye extends Enemy {
 			}
 		}
 		
-		TextureRegion[] eyeFrames2 = new TextureRegion[24 * 1];
+		TextureRegion[] eyeClosedFrames = new TextureRegion[1];
+		eyeClosedFrames[0] = eyeFrames[0][0];
+		
+		TextureRegion[] eyeOpeningFrames = new TextureRegion[11 * 1];
 		index = 0;
 		for (int i = 0; i < 1; i++) {
-			for (int j = 0; j < 24; j++) {
-				eyeFrames2[index++] = eyeFrames[i][j];
+			for (int j = 1; j < 12; j++) {
+				eyeOpeningFrames[index++] = eyeFrames[i][j];
+			}
+		}
+		
+		TextureRegion[] eyeOpenFrames = new TextureRegion[9];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 12; j < 21; j++) {
+				eyeOpenFrames[index++] = eyeFrames[i][j];
+			}
+		}
+		
+		TextureRegion[] eyeClosingFrames = new TextureRegion[4];
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 20; j < 24; j++) {
+				eyeClosingFrames[index++] = eyeFrames[i][j];
 			}
 		}
 		
 		this.flameAnim = new Animation<TextureRegion>(0.1f, flameFrames2);
-		this.eyeOpeningAnim = new Animation<TextureRegion>(0.1f, eyeFrames2);
+		this.eyeClosedAnim = new Animation<TextureRegion>(0.1f, eyeClosedFrames);
+		this.eyeOpeningAnim = new Animation<TextureRegion>(0.1f, eyeOpeningFrames);
+		this.eyeOpenedAnim = new Animation<TextureRegion>(0.1f, eyeOpenFrames);
+		this.eyeClosingAnim = new Animation<TextureRegion>(0.1f, eyeClosingFrames);
 	}
 
 	public void drawEnemy(Batch batch, boolean debug) {
@@ -71,11 +94,17 @@ public class FlameEye extends Enemy {
 		update(Gdx.graphics.getDeltaTime());
 		
 		anim = this.flameAnim;
-		anim2 = this.eyeOpeningAnim;
+		anim2 = this.eyeClosingAnim;
 		
 		TextureRegion currentFlame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFlame.getRegionWidth();
 		this.height = currentFlame.getRegionHeight();
+		
+		hitXStart = x + 8;
+		hitYStart = y + 2;
+		
+		this.hitWidth = 24;
+		this.hitHeight = height - 2;
 		
 		TextureRegion currentEye = anim2.getKeyFrame(stateTime, loop);
 		
