@@ -19,6 +19,7 @@ public class PlayScreen implements Screen
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
+	Vector2 spawnPoint = new Vector2(24, 160);
 	
 	private boolean debug;
 	public static Player player; // static because the enemy class needs to have access to player coordinates
@@ -83,6 +84,12 @@ public class PlayScreen implements Screen
 			}
 			spriteBatch.end();
 		}
+		
+		if(player.isDead())
+		{
+			player.setPosition(spawnPoint.x, spawnPoint.y);
+		}
+		
 	}
 	
 	@Override
@@ -106,7 +113,7 @@ public class PlayScreen implements Screen
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
 		
-		Vector2 spawnPoint = new Vector2(24, 160);
+		//Vector2 spawnPoint = new Vector2(24, 160);
 		
 		//Creates the player with a given sprite batch, spawn point, and places them on the given LAYER
 		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 

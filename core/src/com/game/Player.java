@@ -25,9 +25,14 @@ public class Player implements InputProcessor
 	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
 	
-	private boolean canJump;
+	private int timesJumped = 0;
+	
+	private boolean canJump, canDoubleJump;
+	private boolean wallCling, collidedWithWall;
 	private boolean isInvincible;
 	private boolean isFacingRight;
+	private boolean isDead;
+	private boolean onObject, onObject2;
 	
 	private PlayerState state;
 	private int healthPoints;
@@ -206,7 +211,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false;
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
 			if(invincibleTimer <= 0) {
@@ -221,19 +226,34 @@ public class Player implements InputProcessor
 			this.invincibleTimer = 120;
 		}
 		
-		if(this.state.equals(PlayerState.DAMAGED)) {
+		if(this.state.equals(PlayerState.DAMAGED) || this.state.equals(PlayerState.FALLING)) {
 			//move on y
 			setY(getY() + velocity.y * delta);
 			
 			if(velocity.y < 0) // moving downward
 			{
 				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");     
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");   
+				
 				// re-enable the jump once the player has touched down
 				canJump = collidedY;
+				
+				if(canJump)
+					timesJumped = 0;
+				
+				isDead = death;
 			}
 			else if(velocity.y > 0) // moving upwards
 			{
@@ -268,6 +288,8 @@ public class Player implements InputProcessor
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 			}
 			else if(velocity.x > 0) //moving right
 			{
@@ -276,6 +298,8 @@ public class Player implements InputProcessor
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 			}
 
 			if(collidedX) //reaction to x collision
@@ -348,6 +372,8 @@ public class Player implements InputProcessor
 				//bottom left tile
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 
 			}
 			else if(velocity.x > 0) //moving right
@@ -363,12 +389,48 @@ public class Player implements InputProcessor
 				//bottom right
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 			}
 
 			if(collidedX) //reaction to x collision
 			{
 				setX(oldX); //We set it to the oldX because we technically dont move
 				velocity.x = 0;
+			} //end of collision nightmare
+			
+			/**
+			 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
+			 * which end of their hitbox to use. This is so they can activate bubbles with the 'E' key in the KeyDown() function. 
+			 * 
+			 */
+			
+			if(isFacingRight) 
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
+			}
+			else if(!isFacingRight)
+			{
+				onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
+			}
+			else
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
+				onObject2 = onBubble2;
+				
 			}
 
 			// Update the PlayerState based on the resolution of the above 
@@ -386,6 +448,37 @@ public class Player implements InputProcessor
 					this.state = PlayerState.JUMPING;
 				}
 			}
+			
+			if(currentLayer > 1)
+			{
+				if(timesJumped < 2)
+				{
+					canDoubleJump = true;
+				}
+				else
+				{
+					canDoubleJump = false;
+				}
+				
+			} //End of functions for layer 2 and above
+			
+			if(currentLayer > 2)
+			{
+				
+				if(collidedWithWall)
+				{
+					gravity = 0;
+					velocity.y = 0;
+					timesJumped = 0;
+				}
+				else
+				{
+					gravity = 20 * 9.8f;
+				}
+						
+			}//end of functions for layer 3 and above
+			
+			
 		}
 	}
 
@@ -396,20 +489,60 @@ public class Player implements InputProcessor
 			switch(keycode)
 			{
 			case Keys.LEFT:
-				velocity.x = -movementSpeed;
-				this.isFacingRight = false;
+				
+				if(!wallCling)
+				{
+					velocity.x = -movementSpeed;
+					this.isFacingRight = false;
+				}
+				else if(wallCling)
+				{
+					velocity.x = -movementSpeed;
+					if(collidedWithWall)
+					{
+						velocity.x = -movementSpeed;
+					}
+					this.isFacingRight = false;	
+				}
 				break;
 			case Keys.RIGHT:
-				velocity.x = movementSpeed;
-				this.isFacingRight = true;
+				if(!wallCling)
+				{
+					velocity.x = movementSpeed;
+					this.isFacingRight = true;
+				}
+				else if(wallCling)
+				{
+					velocity.x = movementSpeed;
+					if(collidedWithWall)
+					{
+						velocity.x = movementSpeed;
+					}
+					this.isFacingRight = true;	
+				}
 				break;
 			case Keys.UP:
-				if(canJump) {
+				if(canJump) 
+				{
+					timesJumped++;
 					velocity.y = movementSpeed;
-					this.state = PlayerState.JUMPING;
-					
+					this.state = PlayerState.JUMPING;			
 					canJump = false; //We need to set a flag so that the player cant jump over and over again midair.
 				}
+				else if(!canJump && canDoubleJump)
+				{
+					timesJumped++;
+					velocity.y = movementSpeed;
+					this.state = PlayerState.JUMPING;
+					canJump = false;
+				}
+				break;
+			case Keys.E:
+				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
+					currentLayer = 2;
+				
+				if(onObject2)
+					currentLayer = 3;
 				break;
 			}
 		}
@@ -430,12 +563,8 @@ public class Player implements InputProcessor
 				break;
 			case Keys.UP:
 				if(velocity.y > 0)
-				{
 					velocity.y = 0;	
-				}
-				
 				break;
-
 			}
 		}		
 		return true;
@@ -595,6 +724,11 @@ public class Player implements InputProcessor
 
 	public int getCurrentLayer() {
 		return currentLayer;
+	}
+	
+	public boolean isDead()
+	{
+		return isDead;
 	}
 
 
