@@ -88,6 +88,10 @@ public class Player implements InputProcessor
 		for (int i = 0; i < 1; i++) {
 			for (int j = 0; j < 1; j++) {
 				//idleFrames2[index++] = idleFrames[i][j];
+				
+				// TODO: Temporary! Currently we're just getting a specific
+				// frame of the turnaround animation.
+				
 				idleFrames2[index++] = turnaroundFrames[i][1];
 			}
 		}
@@ -142,7 +146,12 @@ public class Player implements InputProcessor
 			break;
 		case WALKING:
 			// play the walking animation
-			anim = this.walkingAnim;
+			if(this.currentLayer <= 2) {
+				anim = this.walkingAnim;
+			}
+			else {
+				anim = this.runningAnim;
+			}
 			break;
 		case JUMPING:
 			// play the spinning animation lol

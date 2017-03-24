@@ -9,18 +9,28 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
 public class FlameEye extends Enemy {
-
+	
+	private enum FlameState {
+		CLOSED, OPEN, OPENING
+	}
+	
+	private FlameState state;
+	
 	/* =========== ANIMATIONS =========== */
 	private Texture flames;
 	private Texture eye;
 
 	private Animation<TextureRegion> flameAnim;
-	private Animation<TextureRegion> eyeAnim;
+	private Animation<TextureRegion> eyeClosedAnim;
+	private Animation<TextureRegion> eyeOpeningAnim;
+	private Animation<TextureRegion> eyeOpenedAnim;
 	/* ================================== */
 	
 	public FlameEye(Vector2 spawnPoint, TiledMapTileLayer collisionLayer,
 			float moveSpeed) {
 		super(spawnPoint, collisionLayer, moveSpeed);
+		
+		this.state = FlameState.CLOSED;
 		
 		loadTextures();
 	}
@@ -49,7 +59,7 @@ public class FlameEye extends Enemy {
 		}
 		
 		this.flameAnim = new Animation<TextureRegion>(0.1f, flameFrames2);
-		this.eyeAnim = new Animation<TextureRegion>(0.1f, eyeFrames2);
+		this.eyeOpeningAnim = new Animation<TextureRegion>(0.1f, eyeFrames2);
 	}
 
 	public void drawEnemy(Batch batch, boolean debug) {
@@ -61,7 +71,7 @@ public class FlameEye extends Enemy {
 		update(Gdx.graphics.getDeltaTime());
 		
 		anim = this.flameAnim;
-		anim2 = this.eyeAnim;
+		anim2 = this.eyeOpeningAnim;
 		
 		TextureRegion currentFlame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFlame.getRegionWidth();
@@ -70,13 +80,7 @@ public class FlameEye extends Enemy {
 		TextureRegion currentEye = anim2.getKeyFrame(stateTime, loop);
 		
 		batch.draw(currentFlame, this.x, this.y);
-		
-		try {
 		batch.draw(currentEye, this.x, this.y);
-		}
-		catch(NullPointerException e) {
-			System.out.print("null ptr");
-		}
 	}
 
 	public void update(float delta) {

@@ -24,6 +24,13 @@ public class BasicEnemy extends Enemy {
 		
 		this.isFacingRight = true;
 		
+		this.hitXStart = x + 4;
+		this.hitYStart = y + 1;
+		
+		// width + height of the hitbox
+		this.hitWidth = 51;
+		this.hitHeight = 25;
+		
 		loadTextures();
 	}
 	

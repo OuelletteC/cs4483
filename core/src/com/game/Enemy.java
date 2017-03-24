@@ -12,6 +12,9 @@ public abstract class Enemy {
 	protected float x, y;
 	protected float width, height;
 	
+	protected float hitXStart, hitYStart;
+	protected float hitWidth, hitHeight;
+	
 	protected Vector2 velocity = new Vector2(0, -1);
 	protected Vector2 spawn;
 	protected float movementSpeed, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
@@ -170,6 +173,38 @@ public abstract class Enemy {
 		return this.height;
 	}
 	
+	public float getHitXStart() {
+		return hitXStart;
+	}
+
+	public void setHitXStart(float hitXStart) {
+		this.hitXStart = hitXStart;
+	}
+
+	public float getHitYStart() {
+		return hitYStart;
+	}
+
+	public void setHitYStart(float hitYStart) {
+		this.hitYStart = hitYStart;
+	}
+
+	public float getHitWidth() {
+		return hitWidth;
+	}
+
+	public void setHitWidth(float hitWidth) {
+		this.hitWidth = hitWidth;
+	}
+
+	public float getHitHeight() {
+		return hitHeight;
+	}
+
+	public void setHitHeight(float hitHeight) {
+		this.hitHeight = hitHeight;
+	}
+
 	public boolean getEnemyFlag() {
 		return this.enemyFlag;
 	}

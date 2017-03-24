@@ -37,10 +37,7 @@ public class PlayScreen implements Screen
 
 	@Override
 	public void render(float delta)
-	{
-		BitmapFont font = new BitmapFont();
-		SpriteBatch spriteBatch = new SpriteBatch();
-		
+	{		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -69,6 +66,9 @@ public class PlayScreen implements Screen
 		renderer.getBatch().end();
 		
 		if(this.debug == true) {
+			BitmapFont font = new BitmapFont();
+			SpriteBatch spriteBatch = new SpriteBatch();
+			
 			spriteBatch.begin();
 			font.draw(spriteBatch, "x = " + player.getX(), 10, 50);
 			font.draw(spriteBatch, "y = " + player.getY(), 150, 50);
