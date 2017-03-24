@@ -25,13 +25,17 @@ public class Player implements InputProcessor
 	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
 	
-	private boolean canJump;
+	private int timesJumped = 0;
+	
+	private boolean canJump, canDoubleJump;
 	private boolean isInvincible;
 	private boolean isFacingRight;
+	private boolean isDead;
+	private boolean onObject;
 	
 	private PlayerState state;
 	private int healthPoints;
-	private int currentLayer;
+	private int currentLayer; //Keep track of the current layer the player is on
 	private int invincibleTimer;
 	
 	private float stateTime = 0;
@@ -194,7 +198,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, canUseBubble = false;
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
 			if(invincibleTimer <= 0) {
@@ -209,19 +213,34 @@ public class Player implements InputProcessor
 			this.invincibleTimer = 120;
 		}
 		
-		if(this.state.equals(PlayerState.DAMAGED)) {
+		if(this.state.equals(PlayerState.DAMAGED) || this.state.equals(PlayerState.FALLING)) {
 			//move on y
 			setY(getY() + velocity.y * delta);
 			
 			if(velocity.y < 0) // moving downward
 			{
 				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");     
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");   
+				
 				// re-enable the jump once the player has touched down
 				canJump = collidedY;
+				
+				if(canJump)
+					timesJumped = 0;
+				
+				isDead = death;
 			}
 			else if(velocity.y > 0) // moving upwards
 			{
@@ -272,9 +291,27 @@ public class Player implements InputProcessor
 				velocity.x = 0;
 			}
 
-		}
+		} //end of specific damage if
 		else { // player is not currently in the damaged state
 			setY(getY() + velocity.y * delta);
+			
+			//Checks to see if the player is currently on a tile which, when translated to the object layer, is a bubble tile. If so, set onObject to true
+			
+			if(isFacingRight)
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+			}
+			else if(!isFacingRight)
+			{
+				onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+			}
+			else
+			{
+				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
+				onObject = onBubble;
+			}
 
 			// FALLING
 			if (velocity.y < 0) {
@@ -283,14 +320,14 @@ public class Player implements InputProcessor
 
 				//bottom middle
 				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+					collidedY = collisionLayer.getCell((int) ((getX() + ( getWidth() / 2 ) ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
 
 				//bottom right
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
 
 				// re-enable the jump once the player has touched down
-				canJump = collidedY;
+				canJump = collidedY; 
 			}
 			// JUMPING
 			else if(velocity.y > 0) {
@@ -357,8 +394,9 @@ public class Player implements InputProcessor
 			{
 				setX(oldX); //We set it to the oldX because we technically dont move
 				velocity.x = 0;
-			}
-
+				
+			} //end of collision nightmare
+			
 			// Update the PlayerState based on the resolution of the above 
 			if(velocity.x == 0 && velocity.y == 0) {
 				this.state = PlayerState.IDLE;
@@ -374,13 +412,30 @@ public class Player implements InputProcessor
 					this.state = PlayerState.JUMPING;
 				}
 			}
+			
+
+			if(currentLayer > 1)
+			{
+				if(timesJumped < 2)
+				{
+					canDoubleJump = true;
+				}
+				else
+				{
+					canDoubleJump = false;
+				}
+				
+			}
+			
 		}
 	}
 
 	@Override
 	//This method handles what occurs when the key is pressed DOWN
 	public boolean keyDown(int keycode) {
-		if(!(this.state.equals(PlayerState.DAMAGED))) {
+		
+		if(!(this.state.equals(PlayerState.DAMAGED))) //If not damaged, the player is able to control their movements, as they are not recoiling in horrendous agony
+		{
 			switch(keycode)
 			{
 			case Keys.LEFT:
@@ -392,13 +447,27 @@ public class Player implements InputProcessor
 				this.isFacingRight = true;
 				break;
 			case Keys.UP:
-				if(canJump) {
+				if(canJump) 
+				{
+					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;
-					
+					canJump = false; //We need to set a flag so that the player cant jump over and over again midair.				
+				}
+				else if(!canJump && canDoubleJump) //If you are midair, and able to double jump
+				{
+					timesJumped++;
+					velocity.y = movementSpeed;
+					this.state = PlayerState.JUMPING;
 					canJump = false; //We need to set a flag so that the player cant jump over and over again midair.
 				}
+
 				break;
+			case Keys.E:
+				if(onObject)
+					currentLayer++;
+				break;
+			
 			}
 		}
 		return true;
@@ -417,13 +486,10 @@ public class Player implements InputProcessor
 				velocity.x = 0;
 				break;
 			case Keys.UP:
-				if(velocity.y > 0)
-				{
-					velocity.y = 0;	
-				}
-				
-				break;
 
+				if(velocity.y > 0)
+					velocity.y = 0;	
+				break;
 			}
 		}		
 		return true;
@@ -497,6 +563,11 @@ public class Player implements InputProcessor
 		return movementSpeed;
 	}
 	
+	public int getTimesJumped()
+	{
+		return timesJumped;
+	}
+	
 	public void setVelocity(Vector2 velocity)
 	{
 		this.velocity = velocity;
@@ -541,6 +612,11 @@ public class Player implements InputProcessor
 		return this.x;
 	}
 	
+	public boolean isDead()
+	{
+		return isDead;
+	}
+	
 	public void setY(float newY) {
 		this.y = newY;
 	}
@@ -560,6 +636,11 @@ public class Player implements InputProcessor
 	
 	public float getWidth() {
 		return this.width;
+	}
+	
+	public boolean isOnBubble()
+	{
+		return onObject; 
 	}
 	
 	public void setHeight(float height) {
@@ -588,6 +669,11 @@ public class Player implements InputProcessor
 
 	public void setCurrentLayer(int currentLayer) {
 		this.currentLayer = currentLayer;
+	}
+	
+	public boolean getDoubleJump()
+	{
+		return canDoubleJump;
 	}
 	
 	/*
@@ -625,11 +711,11 @@ public class Player implements InputProcessor
 	
 	private void damageRecoil() {
 		if(isFacingRight == true) { // facing right, knock back left
-			velocity.x = -(movementSpeed * (float) 1.25);
+			velocity.x = -(movementSpeed * (float) 1.05);
 			velocity.y = movementSpeed / 2;
 		}
 		else { // facing left, knock back right
-			velocity.x = movementSpeed * (float) 1.25;
+			velocity.x = movementSpeed * (float) 1.05;
 			velocity.y = movementSpeed / 2;
 		}
 	}
