@@ -569,10 +569,14 @@ public class Player implements InputProcessor
 			switch(keycode)
 			{
 			case Keys.LEFT:
-				velocity.x = 0;
+				if (velocity.x < 0) {
+					velocity.x = 0;
+				}
 				break;
 			case Keys.RIGHT:
-				velocity.x = 0;
+				if (velocity.x > 0) {
+					velocity.x = 0;
+				}
 				break;
 			case Keys.UP:
 				if(velocity.y > 0)
