@@ -551,7 +551,6 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
-				currentLayer++;
 				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
 					currentLayer = 2;
 				
