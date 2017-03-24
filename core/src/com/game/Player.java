@@ -22,12 +22,13 @@ public class Player implements InputProcessor
 	
 	/** Movement vector storing x/y velocity */
 	private Vector2 velocity = new Vector2(0, -1);
-	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
+	private float movementSpeed = 125, gravity = 20 * 9.8f;; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
 	
 	private int timesJumped = 0;
 	
 	private boolean canJump, canDoubleJump;
+	private boolean wallCling, collidedWithWall;
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
@@ -198,7 +199,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, canUseBubble = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false;
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
 			if(invincibleTimer <= 0) {
@@ -275,6 +276,8 @@ public class Player implements InputProcessor
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 			}
 			else if(velocity.x > 0) //moving right
 			{
@@ -283,6 +286,8 @@ public class Player implements InputProcessor
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX; 
 			}
 
 			if(collidedX) //reaction to x collision
@@ -373,6 +378,8 @@ public class Player implements InputProcessor
 				//bottom left tile
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX; 
 
 			}
 			else if(velocity.x > 0) //moving right
@@ -388,6 +395,8 @@ public class Player implements InputProcessor
 				//bottom right
 				if(!collidedX)
 					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				collidedWithWall = collidedX;
 			}
 
 			if(collidedX) //reaction to x collision
@@ -396,6 +405,7 @@ public class Player implements InputProcessor
 				velocity.x = 0;
 				
 			} //end of collision nightmare
+			
 			
 			// Update the PlayerState based on the resolution of the above 
 			if(velocity.x == 0 && velocity.y == 0) {
@@ -413,7 +423,6 @@ public class Player implements InputProcessor
 				}
 			}
 			
-
 			if(currentLayer > 1)
 			{
 				if(timesJumped < 2)
@@ -425,7 +434,23 @@ public class Player implements InputProcessor
 					canDoubleJump = false;
 				}
 				
-			}
+			} //End of functions for layer 2 and above
+			
+			if(currentLayer > 2)
+			{
+				
+				if(collidedWithWall)
+				{
+					gravity = 0;
+					velocity.y = 0;
+					timesJumped = 0;
+				}
+				else
+				{
+					gravity = 20 * 9.8f;
+				}
+						
+			}//end of functions for layer 3 and above
 			
 		}
 	}
@@ -439,12 +464,37 @@ public class Player implements InputProcessor
 			switch(keycode)
 			{
 			case Keys.LEFT:
+				if(!wallCling)
+				{
 				velocity.x = -movementSpeed;
 				this.isFacingRight = false;
+				}
+				else if(wallCling)
+				{
+					velocity.x = -movementSpeed;
+					if(collidedWithWall)
+					{
+						velocity.x = -movementSpeed;
+					}
+					this.isFacingRight = false;				
+				}
 				break;
 			case Keys.RIGHT:
+				
+				if(!wallCling)
+				{
 				velocity.x = movementSpeed;
 				this.isFacingRight = true;
+				}
+				else if(wallCling)
+				{
+					velocity.x = movementSpeed;
+					if(collidedWithWall)
+					{
+						velocity.x = movementSpeed;
+					}
+					this.isFacingRight = true;	
+				}
 				break;
 			case Keys.UP:
 				if(canJump) 
@@ -464,10 +514,9 @@ public class Player implements InputProcessor
 
 				break;
 			case Keys.E:
-				if(onObject)
+				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
 					currentLayer++;
 				break;
-			
 			}
 		}
 		return true;
@@ -606,6 +655,11 @@ public class Player implements InputProcessor
 	
 	public void setX(float newX) {
 		this.x = newX;
+	}
+	
+	public boolean collidedX()
+	{
+		return collidedWithWall;
 	}
 	
 	public float getX() {
