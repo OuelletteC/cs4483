@@ -25,13 +25,6 @@ public class IntermediateEnemy extends Enemy {
 		
 		this.isFacingRight = true;
 		
-		this.hitXStart = x + 4;
-		this.hitYStart = y + 1;
-		
-		// width + height of the hitbox
-		this.hitWidth = 51;
-		this.hitHeight = 25;
-		
 		loadTextures();
 	}
 	
@@ -62,6 +55,13 @@ public class IntermediateEnemy extends Enemy {
 		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
+		
+		this.hitXStart = x + 4;
+		this.hitYStart = y + 1;
+		
+		// width + height of the hitbox
+		this.hitWidth = 51 - 4;
+		this.hitHeight = 25 - 1;
 		
 		if(this.isFacingRight == true) {
 			if(!currentFrame.isFlipX()) {

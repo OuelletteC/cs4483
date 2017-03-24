@@ -177,8 +177,20 @@ public class Player implements InputProcessor
 				currentFrame.flip(true, false);
 			}
 		}
-		
-		batch.draw(currentFrame, this.x, this.y);
+		if (this.isInvincible) {
+			// draw the player on every other frame of invincibility to
+			// simulate the "iframe blinking" effect
+			// The "< 10" check is to give the player visual feedback such that they know they aren't invincible
+			if(this.invincibleTimer % 2 != 0 || this.invincibleTimer < 10) {
+				batch.draw(currentFrame, this.x, this.y);
+			}
+		}
+		else {
+			if(this.healthPoints < 2) {
+				healthLowColours(batch, currentFrame);
+			}
+			batch.draw(currentFrame, this.x, this.y);
+		}
 	}
 	
 	public void update(float delta, Enemy[] eAry) {
@@ -590,6 +602,26 @@ public class Player implements InputProcessor
 		this.currentLayer = currentLayer;
 	}
 	
+
+	public boolean isInvincible() {
+		return isInvincible;
+	}
+
+
+	public void setInvincible(boolean isInvincible) {
+		this.isInvincible = isInvincible;
+	}
+
+
+	public int getInvincibleTimer() {
+		return invincibleTimer;
+	}
+
+
+	public void setInvincibleTimer(int invincibleTimer) {
+		this.invincibleTimer = invincibleTimer;
+	}
+	
 	/*
 	 * 
 	 * http://stackoverflow.com/questions/23302698/java-check-if-two-rectangles-overlap-at-any-point/32088787#32088787
@@ -605,10 +637,10 @@ public class Player implements InputProcessor
 			float x2 = this.x + this.width;
 			float y2 = this.y + this.height;
 			
-			float x3 = e.getX();
-			float y3 = e.getY();
-			float x4 = e.getX() + e.getWidth();
-			float y4 = e.getY() + e.getHeight();
+			float x3 = e.getHitXStart();
+			float y3 = e.getHitYStart();
+			float x4 = e.getHitXStart() + e.getHitWidth();
+			float y4 = e.getHitYStart() + e.getHitHeight();
 			
 			// player coords do not overlap with enemy hitbox
 			if(x3 > x2 || y3 > y2 || x1 > x4 || y1 > y4) {
@@ -633,24 +665,68 @@ public class Player implements InputProcessor
 			velocity.y = movementSpeed / 2;
 		}
 	}
-
-	public boolean isInvincible() {
-		return isInvincible;
-	}
-
-
-	public void setInvincible(boolean isInvincible) {
-		this.isInvincible = isInvincible;
-	}
-
-
-	public int getInvincibleTimer() {
-		return invincibleTimer;
-	}
-
-
-	public void setInvincibleTimer(int invincibleTimer) {
-		this.invincibleTimer = invincibleTimer;
+	
+	private void healthLowColours(Batch batch, TextureRegion currFrame) {
+		TextureRegion cf2 = currFrame;
+		float st = this.stateTime;
+		
+		if(st % 20 < 5) {
+			batch.setColor(1.0f, 0, 0, 0.5f);
+			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					(((st % 10)) * 4.5f)); // red
+			batch.setColor(0, 1.0f, 0, 0.5f);
+			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-(((st % 10)) * 4.5f)); // green
+			batch.setColor(0, 0, 1.0f, 0.5f);
+			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					(((st % 10)) * 4.5f)); // blue
+		}
+		else if(st % 20 >= 5 && st % 20 < 10) {
+			batch.setColor(1.0f, 0, 0, 0.5f);
+			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-((st % 10) - 10) * 4.5f); // red
+			batch.setColor(0, 1.0f, 0, 0.5f);
+			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					((st % 10) - 10) * 4.5f); // green
+			batch.setColor(0, 0, 1.0f, 0.5f);
+			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-((st % 10) - 10) * 4.5f); // blue
+		}
+		else if(st % 20 >= 10 && st % 20 < 15) {
+			batch.setColor(1.0f, 0, 0, 0.5f);
+			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-((st % 10)) * 4.5f); // red
+			batch.setColor(0, 1.0f, 0, 0.5f);
+			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					((st % 10)) * 4.5f); // green
+			batch.setColor(0, 0, 1.0f, 0.5f);
+			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-((st % 10)) * 4.5f); // blue
+		}
+		else {
+			batch.setColor(1.0f, 0, 0, 0.5f);
+			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					((st % 10) - 10) * 4.5f); // red
+			batch.setColor(0, 1.0f, 0, 0.5f);
+			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					-((st % 10) - 10) * 4.5f); // green
+			batch.setColor(0, 0, 1.0f, 0.5f);
+			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
+					this.width, this.height, 1, 1, 
+					((st % 10) - 10) * 4.5f); // blue
+		}
+		batch.setColor(1,1,1,1);
 	}
 
 }
