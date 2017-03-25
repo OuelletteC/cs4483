@@ -22,6 +22,7 @@ public class PlayScreen implements Screen
 	public Level currLevel;
 	
 	private boolean debug;
+	private boolean init = true;
 	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -46,6 +47,7 @@ public class PlayScreen implements Screen
 		
 		// Space to render enemies
 		currLevel.renderEnemies(renderer.getBatch(), this.debug);
+		currLevel.renderBubbles(renderer.getBatch(), this.debug);
 		
 	    //Renders the player
 		currLevel.getPlayer().update(Gdx.graphics.getDeltaTime(), currLevel.getEnemyArray());
@@ -106,6 +108,8 @@ public class PlayScreen implements Screen
 		currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
 		currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
 		currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
+		
+		currLevel.setBubbleLocation(0, new Vector2(830, 350));
 	}
 	
 	@Override
