@@ -29,15 +29,16 @@ public class Player implements InputProcessor
 	
 	private boolean canJump, canDoubleJump;
 	private boolean wallCling, collidedWithWall;
+	private boolean canHover;
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean onObject, onObject2;
+	private boolean onObject, onObject2, onObject3;
 	
 	private PlayerState state;
 	private int healthPoints;
 	private int currentLayer;
-	private int invincibleTimer;
+	private int invincibleTimer, hoverTimer;
 	
 	private float stateTime = 0;
 	
@@ -64,6 +65,7 @@ public class Player implements InputProcessor
 		
 		this.isInvincible = true;
 		this.invincibleTimer = 120;
+		this.hoverTimer = 80;
 		
 		this.x = spawnPoint.x;
 		this.y = spawnPoint.y;
@@ -223,7 +225,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false;;
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
 			if(invincibleTimer <= 0) {
@@ -425,6 +427,9 @@ public class Player implements InputProcessor
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
 				
+				onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
+				
 			}
 			else if(!isFacingRight)
 			{
@@ -434,6 +439,9 @@ public class Player implements InputProcessor
 				onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
 				
+				onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
+				
 			}
 			else
 			{
@@ -442,6 +450,9 @@ public class Player implements InputProcessor
 				
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
 				
 			}
 
@@ -491,7 +502,11 @@ public class Player implements InputProcessor
 						
 			}//end of functions for layer 3 and above
 			
-			
+			if(currentLayer > 3)
+			{
+				canHover = true;
+	
+			}//end of functions for layer 4 and above
 		}
 	}
 
@@ -551,11 +566,15 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
-				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
+				if(onObject) 
 					currentLayer = 2;
 				
 				if(onObject2)
 					currentLayer = 3;
+				
+				if(onObject3)
+					currentLayer = 4;
+				
 				break;
 			}
 		}
@@ -581,6 +600,14 @@ public class Player implements InputProcessor
 			case Keys.UP:
 				if(velocity.y > 0)
 					velocity.y = 0;	
+				
+				if(canHover && hoverTimer >= 0)
+				{
+					gravity = 9.8f;
+					hoverTimer = hoverTimer - 1;
+				}
+				
+					
 				break;
 			}
 		}		
