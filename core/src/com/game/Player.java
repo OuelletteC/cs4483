@@ -358,19 +358,29 @@ public class Player implements InputProcessor
 				// bottom left
 				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
 
+				death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				//bottom middle
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				//bottom right
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
 
 				// re-enable the jump once the player has touched down
 				canJump = collidedY;
 				
 				if(canJump)
 					timesJumped = 0;
+				
+				isDead = death;
 			}
 			// JUMPING
 			else if(velocity.y > 0) {
@@ -449,6 +459,8 @@ public class Player implements InputProcessor
 			{
 				setX(oldX); //We set it to the oldX because we technically dont move
 			} //end of collision nightmare
+			
+			
 			
 			/**
 			 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
