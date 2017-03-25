@@ -781,6 +781,21 @@ public class Player implements InputProcessor
 		this.collisionLayer = collisionLayer;
 	}
 	
+	public Music getMusicForLayer1()
+	{
+		return musicForLayer1;
+	}
+	
+	public Music getMusicForLayer2()
+	{
+		return musicForLayer2;
+	}
+	
+	public Music getMusicForLayer3()
+	{
+		return musicForLayer3;
+	}
+	
 	public TiledMapTileLayer getCollisionLayer()
 	{
 		return collisionLayer;
