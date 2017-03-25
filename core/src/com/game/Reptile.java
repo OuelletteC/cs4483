@@ -56,12 +56,12 @@ public class Reptile extends Enemy {
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
 		
-		this.hitXStart = x + 4;
+		this.hitXStart = x + 12;
 		this.hitYStart = y + 1;
 		
 		// width + height of the hitbox
-		this.hitWidth = 51 - 4;
-		this.hitHeight = 25 - 1;
+		this.hitWidth = 38;
+		this.hitHeight = 22;
 		
 		if(this.isFacingRight == true) {
 			if(!currentFrame.isFlipX()) {

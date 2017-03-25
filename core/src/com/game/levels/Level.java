@@ -42,7 +42,9 @@ public class Level {
 		this.maxEnemyCount = enemyCount;
 		this.enemyArray = new Enemy[this.maxEnemyCount];
 		
-		addEnemyToArray(new Tentacles(new Vector2(256, 100), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this));
+		addEnemyToArray(new Tentacles(new Vector2(400, 96), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this));
+		//addEnemyToArray(new Reptile(new Vector2(100, 96), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this));
+		addEnemyToArray(new FlameEye(new Vector2(300, 96), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this));
 		
 	}
 	

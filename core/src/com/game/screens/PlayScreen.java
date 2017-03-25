@@ -24,7 +24,7 @@ public class PlayScreen implements Screen
 	private OrthographicCamera camera;
 	Application game;
 	
-	private int numberOfEnemies = 1;
+	private int numberOfEnemies = 2;
 	private int stageCount = 0;
 	
 	public Level currLevel;
