@@ -16,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.game.*;
 import com.game.levels.Level;
+import com.game.levels.Stage1;
 import com.game.Application;
 
 public class PlayScreen implements Screen
@@ -125,8 +126,8 @@ public class PlayScreen implements Screen
 	public void show()
 	{
 		// create new Level object
-		currLevel = new Level(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
-				Vector2(48, 100), numberOfEnemies); // create the level
+		currLevel = new Stage1(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
+				Vector2(48, 100)); // create the level
 	
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
