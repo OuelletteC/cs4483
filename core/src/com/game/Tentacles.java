@@ -39,7 +39,7 @@ public class Tentacles extends Enemy {
 	
 	private void loadTextures() {
 		
-		this.tentacleSheet = new Texture("Tentacle-Sheet-Resized.png");
+		this.tentacleSheet = new Texture("Tentacle-Sheet.png");
 		
 		int numImagesAcross = 10;
 		int numImagesHigh = 1;
@@ -70,6 +70,14 @@ public class Tentacles extends Enemy {
 		TextureRegion currentTentacle = anim.getKeyFrame(stateTime, loop);
 		this.width = currentTentacle.getRegionWidth();
 		this.height = currentTentacle.getRegionHeight();
+		
+		/* for the small tentacle
+		hitXStart = x + 10;
+		hitYStart = y + 2;
+		
+		this.hitWidth = 0;
+		this.hitHeight = 22;
+		*/
 		
 		hitXStart = x + 10;
 		hitYStart = y + 2;
