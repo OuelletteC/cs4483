@@ -25,7 +25,7 @@ public class PlayScreen implements Screen
 	Application game;
 	
 	private int numberOfEnemies = 0;
-	private int stageCount = 1;
+	private int stageCount = 0;
 	
 	public Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
@@ -92,7 +92,7 @@ public class PlayScreen implements Screen
 		
 		if(currLevel.getPlayer().getVictory()) //If the player encounters a 'victory tile,' change the current level the player is on
 		{
-			stageCount = 2;
+			stageCount++;
 			dispose();
 			show();
 			currLevel.getPlayer().setVelocity(new Vector2(0, 0));
