@@ -16,23 +16,12 @@ import com.game.levels.Level;
 
 public class PlayScreen implements Screen
 {
-	//private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
-	//Vector2 spawnPoint = new Vector2(24, 400);
 	
 	public Level currLevel;
 	
 	private boolean debug;
-	//public static Player player; 
-	
-	//private Enemy[] eArray = new Enemy[3]; // TODO: untangle the eArray further
-	
-	/*
-	private BasicEnemy basicEnemy1;
-	private IntermediateEnemy intEnemy1;
-	private FlameEye fE1;
-	*/
 	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -100,13 +89,12 @@ public class PlayScreen implements Screen
 		 * */
 		camera.viewportWidth = width / 2;
 		camera.viewportHeight = height / 2;
-		
-		//camera.update(); Dont need to update the camera since we do so in the render function, as the player is not being followe by the camera.
 	}
 
 	@Override
 	public void show()
 	{
+		// create new Level object
 		currLevel = new Level(new TmxMapLoader().load("Stage2_a.tmx"), new 
 				Vector2(24, 400), 3); // create the level
 		
@@ -114,24 +102,10 @@ public class PlayScreen implements Screen
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
 		
-		//Creates the player with a given spawn point, and places them on the given LAYER
-		/*
-		player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background")); 
-		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
-		player.setCurrentLayer(1);
-		
-		
-		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
-		*/
-		
 		// Creating enemies here
 		currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
 		currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
 		currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		
-		//eArray[0].setPosition(128, 160);
-		//eArray[1].setPosition(256, 160);
-		//eArray[2].setPosition(160,160);
 	}
 	
 	@Override
@@ -160,8 +134,6 @@ public class PlayScreen implements Screen
 	{
 		currLevel.disposeMap();
 		renderer.dispose();
-		//player.getTexture().dispose();
-		
 	}
 
 }

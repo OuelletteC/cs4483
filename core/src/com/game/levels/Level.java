@@ -31,6 +31,7 @@ public class Level {
 		this.map = tm;
 		this.spawnPoint = spawn;
 		
+		//Creates the player with a given spawn point, and places them on the given LAYER
 		this.player = new Player(spawnPoint, (TiledMapTileLayer) map.getLayers().get("Background"));
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		player.setCurrentLayer(1);
