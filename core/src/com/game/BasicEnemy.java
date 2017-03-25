@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.levels.Level;
 
 public class BasicEnemy extends Enemy {
 	
@@ -19,8 +20,8 @@ public class BasicEnemy extends Enemy {
 	private Animation<TextureRegion> walkingAnim;
 	/* ================================== */
 	
-	public BasicEnemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
-		super(spawnPoint, collisionLayer, moveSpeed);
+	public BasicEnemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed, Level level) {
+		super(spawnPoint, collisionLayer, moveSpeed, level);
 		
 		this.isFacingRight = true;
 		
