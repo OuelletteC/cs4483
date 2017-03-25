@@ -15,7 +15,7 @@ public class MainMenuScreen implements Screen {
 	private static final int EXIT_HEIGHT = 100;
 	private static final int NAME_WIDTH = 400;
 	private static final int NAME_HEIGHT = 200;
-	
+	private boolean DEBUG = true;
 	
 	
 	Application game;
@@ -57,7 +57,9 @@ public class MainMenuScreen implements Screen {
 		if(Gdx.input.getX()>x && Gdx.input.getX()<x+PLAY_WIDTH && 728- Gdx.input.getY()>200 && 728- Gdx.input.getY()<200+PLAY_HEIGHT){
 		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
 		if(Gdx.input.isTouched()){
-			game.setScreen(new PlayScreen());
+			game.setScreen(new PlayScreen(DEBUG));
+			/* test when player died go back to main menu */
+//			game.setScreen(new MainMenuScreen(game));
 		}
 		}
 		else{
@@ -112,4 +114,5 @@ public class MainMenuScreen implements Screen {
 		
 	}
 	
+
 }
