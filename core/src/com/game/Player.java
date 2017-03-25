@@ -226,9 +226,11 @@ public class Player implements InputProcessor
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
 		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false;;
+		
+		// Decrement the invincibility timer if the player is invincible
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
-			if(invincibleTimer <= 0) {
+			if(invincibleTimer <= 0) { // if the invincibility timer hits zero, the player is no longer invincible
 				isInvincible = false;
 			}
 		}
@@ -240,7 +242,13 @@ public class Player implements InputProcessor
 			this.invincibleTimer = 120;
 		}
 		
-		if(this.state.equals(PlayerState.DAMAGED) || this.state.equals(PlayerState.FALLING)) {
+		// if the player is in a DAMAGED state, they won't be able to be controlled
+		// so this handles the collision and returns control to the player after
+		// they touch down. Castlevania style.
+		
+		// SEE ALSO: The "else" block for this code below for collision if the player DOES
+		// have control
+		if(this.state.equals(PlayerState.DAMAGED)) {
 			//move on y
 			setY(getY() + velocity.y * delta);
 			
@@ -287,7 +295,7 @@ public class Player implements InputProcessor
 				setY(oldY);
 				setX(oldX);
 				velocity.y = 0;
-				//velocity.x = 0;
+				velocity.x = 0;
 				this.state = PlayerState.IDLE;
 			}
 
