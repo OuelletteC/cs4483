@@ -93,6 +93,9 @@ public class PlayScreen implements Screen
 		
 		if(currLevel.getPlayer().getVictory()) //If the player encounters a 'victory tile,' change the current level the player is on
 		{
+			currLevel.getPlayer().getMusicForLayer1().dispose();
+			currLevel.getPlayer().getMusicForLayer2().dispose();
+			currLevel.getPlayer().getMusicForLayer3().dispose();
 			stageCount++;
 			dispose();
 			show();
