@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.levels.Level;
 
 public abstract class Enemy {
 	
@@ -15,6 +16,8 @@ public abstract class Enemy {
 	protected float hitXStart, hitYStart;
 	protected float hitWidth, hitHeight;
 	
+	protected Level currLevel;
+	
 	protected Vector2 velocity = new Vector2(0, -1);
 	protected Vector2 spawn;
 	protected float movementSpeed, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
@@ -23,10 +26,13 @@ public abstract class Enemy {
 	protected boolean enemyFlag = true;
 	protected float stateTime = 0;
 	
-	public Enemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed) {
+	public Enemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed, Level level) {
 		this.collisionLayer = collisionLayer;
 		spawn = spawnPoint;
 		movementSpeed = moveSpeed;
+		
+		currLevel = level;
+		setPosition(spawn.x, spawn.y);
 	}
 	
 	public abstract void drawEnemy(Batch batch, boolean debug);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.levels.Level;
 import com.game.screens.PlayScreen;
 
 public class FlameEye extends Enemy {
@@ -29,8 +30,8 @@ public class FlameEye extends Enemy {
 	/* ================================== */
 	
 	public FlameEye(Vector2 spawnPoint, TiledMapTileLayer collisionLayer,
-			float moveSpeed) {
-		super(spawnPoint, collisionLayer, moveSpeed);
+			float moveSpeed, Level level) {
+		super(spawnPoint, collisionLayer, moveSpeed, level);
 		
 		this.state = FlameState.CLOSED;
 		
@@ -119,8 +120,8 @@ public class FlameEye extends Enemy {
 	public void update(float delta) {
 		this.stateTime += delta;
 		
-		float playerX = PlayScreen.player.getX();
-		float playerY = PlayScreen.player.getY();
+		float playerX = currLevel.player.getX();
+		float playerY = currLevel.player.getY();
 		float enemyX = getX();
 		float enemyY = getY();
 		
