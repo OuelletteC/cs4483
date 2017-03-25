@@ -10,8 +10,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.game.Enemy;
-import com.game.Player;
+import com.game.*;
 
 public class Level {
 	
@@ -26,6 +25,9 @@ public class Level {
 	protected int maxEnemyCount; // integer with which to create the enemyArray, the maximum enemies in the level
 	protected int initializedEnemies = 0; // number of initialized enemies, used for addEnemyToArray()
 	protected Enemy[] enemyArray;
+	
+	protected int maxNumBubbles;
+	protected Bubble[] bubbleArray;
 	
 	public Level(TiledMap tm, Vector2 spawn, int enemyCount) {
 		this.map = tm;
@@ -57,6 +59,37 @@ public class Level {
 			enemyArray[i].drawEnemy(batch, debug);
 		}
 	}
+	
+	// WORK IN PROGRESS
+	public boolean bubbleCollision() {
+		boolean retVal = false;
+		
+		for(int i = 0; i < maxNumBubbles; i++) {
+			Bubble bubble = this.bubbleArray[i];
+			
+			float x1 = player.getX();
+			float y1 = player.getY();
+			float x2 = player.getX() + player.getWidth();
+			float y2 = player.getY() + player.getHeight();
+
+			float x3 = bubble.getX();
+			float y3 = bubble.getY();
+			float x4 = bubble.getX() + bubble.getWidth();
+			float y4 = bubble.getY() + bubble.getHeight();
+
+			// player coords do not overlap with bubble
+			if(x3 > x2 || y3 > y2 || x1 > x4 || y1 > y4) {
+				retVal = false;
+			}
+			else { // player coords overlap with bubble
+				retVal = true;
+				break;
+			}
+		}
+		
+		return retVal;
+	}
+	
 	
 	public void disposeMap() {
 		map.dispose();

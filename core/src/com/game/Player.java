@@ -48,12 +48,15 @@ public class Player implements InputProcessor
 	private Texture walking;
 	private Texture running;
 	private Texture clinging;
+	private Texture jumpNFall;
 	
 	private Animation<TextureRegion> idleAnim;
 	private Animation<TextureRegion> turnaroundAnim;
 	private Animation<TextureRegion> walkingAnim;
 	private Animation<TextureRegion> runningAnim;
 	private Animation<TextureRegion> clingAnim;
+	private Animation<TextureRegion> jumpAnim;
+	private Animation<TextureRegion> fallAnim;
 	/* ================================== */
 	
 	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
@@ -87,12 +90,14 @@ public class Player implements InputProcessor
 		this.walking = new Texture("polarity_pc_walk-sheet.png");
 		this.running = new Texture("polarity_pc_run-bounce-sheet.png");
 		this.clinging = new Texture("Polarity_PC_Wall-Hang-Sheet.png");
+		this.jumpNFall = new Texture("Polarity_PC_Jump-Sheet.png");
 		
 		TextureRegion[][] idleFrames = TextureRegion.split(idle, idle.getWidth(), idle.getHeight());
 		TextureRegion[][] turnaroundFrames = TextureRegion.split(turnaround, (turnaround.getWidth() / 8), turnaround.getHeight());
 		TextureRegion[][] walkingFrames = TextureRegion.split(walking, (walking.getWidth() / 4), walking.getHeight());
 		TextureRegion[][] runningFrames = TextureRegion.split(running, (running.getWidth() / 8), running.getHeight());
 		TextureRegion[][] clingFrames = TextureRegion.split(clinging, clinging.getWidth(), clinging.getHeight());
+		TextureRegion[][] jumpNFallFrames = TextureRegion.split(jumpNFall, jumpNFall.getWidth() / 3, jumpNFall.getHeight());
 		
 		TextureRegion[] idleFrames2 = new TextureRegion[1 * 1];
 		int index = 0;
@@ -136,11 +141,20 @@ public class Player implements InputProcessor
 		TextureRegion [] clingFrames2 = new TextureRegion[1];
 		clingFrames2[0] = clingFrames[0][0];
 		
+		TextureRegion[] jumpFrames = new TextureRegion[2];
+		jumpFrames[0] = jumpNFallFrames[0][0];
+		jumpFrames[1] = jumpNFallFrames[0][1];
+		
+		TextureRegion[] fallFrames = new TextureRegion[1];
+		fallFrames[0] = jumpNFallFrames[0][0];
+		
 		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
 		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);
 		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
 		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
 		this.clingAnim = new Animation<TextureRegion>(0.1f, clingFrames2);
+		this.jumpAnim = new Animation<TextureRegion>(0.1f, jumpFrames);
+		this.fallAnim = new Animation<TextureRegion>(0.1f, fallFrames);
 	}
 	
 	/*
@@ -161,16 +175,21 @@ public class Player implements InputProcessor
 			break;
 		case WALKING:
 			// play the walking animation
-			if(this.currentLayer <= 2) {
+			if(this.currentLayer <= 2) { // if the current layer is 2 or shallower, walk
 				anim = this.walkingAnim;
 			}
-			else {
+			else { // if the layer is 3 or deeper, RUN
 				anim = this.runningAnim;
 			}
 			break;
 		case JUMPING:
-			// play the spinning animation lol
-			anim = this.turnaroundAnim;
+			// play the jumping animation
+			anim = this.jumpAnim;
+			loop = false;
+			break;
+		case FALLING:
+			// play the falling animation
+			anim = this.fallAnim;
 			break;
 		case CLING:
 			// play the cling animation
@@ -349,6 +368,9 @@ public class Player implements InputProcessor
 
 				// re-enable the jump once the player has touched down
 				canJump = collidedY;
+				
+				if(canJump)
+					timesJumped = 0;
 			}
 			// JUMPING
 			else if(velocity.y > 0) {
@@ -368,6 +390,14 @@ public class Player implements InputProcessor
 			{
 				setY(oldY); //We set it to the oldY because we technically dont move
 				velocity.y = 0;
+				
+				// this is for the wall-cling + jump workaround
+				// if this detects that the player has collided on Y with an X velocity of less
+				// than the movementSpeed (such as, half of the movementSpeed variable)
+				// then it will stop the player's x-velocity on collision.
+				if(Math.abs(velocity.x) < movementSpeed) {
+					velocity.x = 0;
+				}
 			}
 			// move on x
 			setX(getX() + velocity.x * delta);
@@ -418,7 +448,6 @@ public class Player implements InputProcessor
 			if(collidedX) //reaction to x collision
 			{
 				setX(oldX); //We set it to the oldX because we technically dont move
-				velocity.x = 0;
 			} //end of collision nightmare
 			
 			/**
@@ -499,7 +528,7 @@ public class Player implements InputProcessor
 				if(collidedWithWall)
 				{
 					gravity = 0;
-					velocity.y = 0;
+					velocity.y = -10;
 					timesJumped = 0;
 					state = PlayerState.CLING;
 				}
@@ -554,10 +583,20 @@ public class Player implements InputProcessor
 					{
 						velocity.x = movementSpeed;
 					}
-					this.isFacingRight = true;	
+					this.isFacingRight = true;
 				}
 				break;
 			case Keys.UP:
+				if(state == PlayerState.CLING) {
+					if(isFacingRight == false) {
+						velocity.x = movementSpeed / 2;
+						this.isFacingRight = true;
+					}
+					else {
+						velocity.x = -(movementSpeed) / 2;
+						this.isFacingRight = false;
+					}
+				}
 				if(canJump) 
 				{
 					timesJumped++;
@@ -574,6 +613,8 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
+				
+				//currentLayer++;
 				if(onObject) 
 					currentLayer = 2;
 				
@@ -607,7 +648,7 @@ public class Player implements InputProcessor
 				break;
 			case Keys.UP:
 				if(velocity.y > 0)
-					velocity.y = 0;	
+					velocity.y = 0;
 				
 				if(canHover && hoverTimer >= 0)
 				{
@@ -914,5 +955,4 @@ public class Player implements InputProcessor
 		}
 		batch.setColor(1,1,1,1);
 	}
-
 }
