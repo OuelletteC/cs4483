@@ -175,19 +175,20 @@ public class Player implements InputProcessor
 			break;
 		case WALKING:
 			// play the walking animation
-			if(this.currentLayer <= 2) {
+			if(this.currentLayer <= 2) { // if the current layer is 2 or shallower, walk
 				anim = this.walkingAnim;
 			}
-			else {
+			else { // if the layer is 3 or deeper, RUN
 				anim = this.runningAnim;
 			}
 			break;
 		case JUMPING:
-			// play the spinning animation lol
+			// play the jumping animation
 			anim = this.jumpAnim;
 			loop = false;
 			break;
 		case FALLING:
+			// play the falling animation
 			anim = this.fallAnim;
 			break;
 		case CLING:
@@ -390,6 +391,10 @@ public class Player implements InputProcessor
 				setY(oldY); //We set it to the oldY because we technically dont move
 				velocity.y = 0;
 				
+				// this is for the wall-cling + jump workaround
+				// if this detects that the player has collided on Y with an X velocity of less
+				// than the movementSpeed (such as, half of the movementSpeed variable)
+				// then it will stop the player's x-velocity on collision.
 				if(Math.abs(velocity.x) < movementSpeed) {
 					velocity.x = 0;
 				}
@@ -608,7 +613,8 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
-				currentLayer++;
+				
+				//currentLayer++;
 				if(onObject) 
 					currentLayer = 2;
 				
@@ -949,5 +955,4 @@ public class Player implements InputProcessor
 		}
 		batch.setColor(1,1,1,1);
 	}
-
 }
