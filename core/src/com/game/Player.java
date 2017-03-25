@@ -34,6 +34,7 @@ public class Player implements InputProcessor
 	private boolean isFacingRight;
 	private boolean isDead;
 	private boolean onObject, onObject2, onObject3;
+	private boolean victory;
 	
 	private PlayerState state;
 	private int healthPoints;
@@ -244,7 +245,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false;;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
 		
 		// Decrement the invincibility timer if the player is invincible
 		if(isInvincible == true) {
@@ -467,6 +468,9 @@ public class Player implements InputProcessor
 				onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
 				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else if(!isFacingRight)
 			{
@@ -479,6 +483,9 @@ public class Player implements InputProcessor
 				onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
 				
+				victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else
 			{
@@ -490,6 +497,9 @@ public class Player implements InputProcessor
 				
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
+				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				victory = victoryTile;
 				
 			}
 
@@ -520,6 +530,8 @@ public class Player implements InputProcessor
 					canDoubleJump = false;
 				}
 				
+				canHover = false;
+				
 			} //End of functions for layer 2 and above
 			
 			if(currentLayer > 2)
@@ -536,6 +548,8 @@ public class Player implements InputProcessor
 				{
 					gravity = 20 * 9.8f;
 				}
+				
+				canHover = false;
 						
 			}//end of functions for layer 3 and above
 			
@@ -726,6 +740,16 @@ public class Player implements InputProcessor
 		this.movementSpeed = speed;
 	}
 	
+	public boolean getVictory()
+	{
+		return victory;
+	}
+	
+	public void setVictory(boolean x)
+	{
+		this.victory = x;
+	}
+	
 	public float getSpeed()
 	{
 		return movementSpeed;
@@ -781,6 +805,11 @@ public class Player implements InputProcessor
 	
 	public float getY() {
 		return this.y;
+	}
+	
+	public boolean getCollidedX()
+	{
+		return collidedWithWall;
 	}
 	
 	public void setPosition(float theX, float theY) {
