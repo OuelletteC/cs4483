@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.game.*;
 
 public class PlayScreen implements Screen
-{
+{   
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
@@ -25,6 +25,7 @@ public class PlayScreen implements Screen
 	public static Player player; // static because the enemy class needs to have access to player coordinates
 	
 	private Enemy[] eArray = new Enemy[3]; // TODO: untangle the eArray further
+	Application game;
 	
 	/*
 	private BasicEnemy basicEnemy1;
@@ -88,6 +89,7 @@ public class PlayScreen implements Screen
 		if(player.isDead())
 		{
 			player.setPosition(spawnPoint.x, spawnPoint.y);
+//			game.setScreen(new MainMenuScreen(game));
 		}
 		
 	}

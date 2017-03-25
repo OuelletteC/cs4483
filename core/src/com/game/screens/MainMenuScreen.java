@@ -58,6 +58,8 @@ public class MainMenuScreen implements Screen {
 		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
 		if(Gdx.input.isTouched()){
 			game.setScreen(new PlayScreen(DEBUG));
+			/* test when player died go back to main menu */
+//			game.setScreen(new MainMenuScreen(game));
 		}
 		}
 		else{
