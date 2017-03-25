@@ -41,6 +41,9 @@ public class Level {
 		
 		this.maxEnemyCount = enemyCount;
 		this.enemyArray = new Enemy[this.maxEnemyCount];
+		
+		addEnemyToArray(new Tentacles(new Vector2(256, 100), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this));
+		
 	}
 	
 	public void addEnemyToArray(Enemy enemy) {
