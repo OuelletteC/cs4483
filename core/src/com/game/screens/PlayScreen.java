@@ -33,7 +33,7 @@ public class PlayScreen implements Screen{
 	private String dialogueLayer2[] = {"I feel strange, as though I am somehow lighter.", "What images of ascension reveal themselves to me?", "I can reach new heights!"};
 	private String dialogueLayer3[] = {"All my life, I felt something gnawing at the back of my mind...", "Mercy, mercy! Such vistas of emptiness, show me no more!", "Oh god, the eyes! The eyes!!"};	
 	public static Level currLevel;
-	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
+	public String currStage[] = {"", "Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
 	BitmapFont dialogueFont = new BitmapFont();
 	SpriteBatch spriteBatch = new SpriteBatch();
@@ -163,8 +163,9 @@ public class PlayScreen implements Screen{
 			currLevel.getPlayer().getMusicForLayer3().dispose();
 			stageCount++;
 			dispose();
-			show();
-			currLevel.getPlayer().setVelocity(new Vector2(0, 0));
+			game.setScreen(new StageStartScreen(game, stageCount));
+			//show();
+			//currLevel.getPlayer().setVelocity(new Vector2(0, 0));
 			
 			try 
 			{
