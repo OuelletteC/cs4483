@@ -16,8 +16,8 @@ public class MainMenuScreen implements Screen {
 	private static final int NAME_WIDTH = 400;
 	private static final int NAME_HEIGHT = 200;
 	private boolean DEBUG = true;
-	
-	
+
+
 	Application game;
 	Texture playButtonActive;
 	Texture playButtonInactive;
@@ -25,8 +25,10 @@ public class MainMenuScreen implements Screen {
 	Texture exitButtonInactive;
 	Texture gameName;
 	Texture background;
-
 	
+	private int menuTimer = 0; // time variable used in the rotating "Polarity" functions
+
+
 	public MainMenuScreen(Application game){
 		this.game = game;
 		playButtonActive = new Texture("play_button_active.png");
@@ -40,7 +42,7 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -50,20 +52,42 @@ public class MainMenuScreen implements Screen {
 		game.batch.begin();
 		/*set the background*/
 		game.batch.draw(background, 0, 0, 1280, 728);
-		/*set game name*/
-		game.batch.draw(gameName, 1280/2-NAME_WIDTH/2, 460, NAME_WIDTH, NAME_HEIGHT);
-       /* set the play button*/ 
+		
+		
+		/*set game name*/		
+		float cx = 1280/2-NAME_WIDTH/2;
+		float cy = 460;
+		
+		// draw green
+		game.batch.setColor(0, 1, 0, 0.6f);
+		game.batch.draw(gameName, (float) (cx + -(5 * Math.cos((float)menuTimer / 30)) ), 
+				(float) (cy + (5 * Math.sin((float)menuTimer / 30)) ), NAME_WIDTH, NAME_HEIGHT);
+		// draw red
+		game.batch.setColor(1, 0, 0, 0.6f);
+		game.batch.draw(gameName, (float)(cx + (5 * Math.cos((float)menuTimer / 30)) ), 
+				(float)(cy + (5 * Math.sin((float)menuTimer / 30)) ), NAME_WIDTH, NAME_HEIGHT);
+		// draw blue
+		game.batch.setColor(0, 0, 1, 0.6f);
+		game.batch.draw(gameName, (float) (cx + (5 * Math.cos((float)menuTimer / 30)) ), 
+				(float) (cy + -(5 * Math.sin((float)menuTimer / 30)) ), NAME_WIDTH, NAME_HEIGHT);
+		
+		// clear the colours
+		game.batch.setColor(1, 1, 1, 1);
+		menuTimer++; // increment the time variable
+		
+		game.batch.draw(gameName, cx, cy, NAME_WIDTH, NAME_HEIGHT);
+		/* set the play button*/ 
 		int x =1280/2-PLAY_WIDTH/2;
 		if(Gdx.input.getX()>x && Gdx.input.getX()<x+PLAY_WIDTH && 728- Gdx.input.getY()>200 && 728- Gdx.input.getY()<200+PLAY_HEIGHT){
-		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-		if(Gdx.input.isTouched()){
-			game.setScreen(new PlayScreen(DEBUG));
-		}
+			game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
+			if(Gdx.input.isTouched()){
+				game.setScreen(new PlayScreen(DEBUG));
+			}
 		}
 		else{
 			game.batch.draw(playButtonInactive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-		
-	
+
+
 		}
 		/* set the exit button*/
 		int a =1280/2-EXIT_WIDTH/2;
@@ -71,45 +95,45 @@ public class MainMenuScreen implements Screen {
 			game.batch.draw(exitButtonActive, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
 			if(Gdx.input.isTouched()){
 				Gdx.app.exit();
-				
+
 			}
-			}
-			else{
-				game.batch.draw(exitButtonInactive, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
-		
-			}
+		}
+		else{
+			game.batch.draw(exitButtonInactive, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
+
+		}
 		game.batch.end();
-		
+
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }
