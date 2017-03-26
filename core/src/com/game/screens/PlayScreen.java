@@ -72,6 +72,7 @@ public class PlayScreen implements Screen
 		
 		// Space to render enemies
 		currLevel.renderEnemies(renderer.getBatch(), this.debug);
+		currLevel.renderBubbles(renderer.getBatch(), this.debug);
 		
 	    //Renders the player
 		currLevel.getPlayer().update(Gdx.graphics.getDeltaTime(), currLevel.getEnemyArray());
