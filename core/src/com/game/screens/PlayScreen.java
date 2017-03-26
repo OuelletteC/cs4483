@@ -151,7 +151,7 @@ public class PlayScreen implements Screen{
 		
 		if(currLevel.getPlayer().isDead())
 		{
-			//currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
+			
 			dispose();
 			game.setScreen(new GameOverScreen(game));
 		}
@@ -242,6 +242,9 @@ public class PlayScreen implements Screen{
 	{
 		currLevel.disposeMap();
 		renderer.dispose();
+		currLevel.getPlayer().getMusicForLayer1().dispose();
+		currLevel.getPlayer().getMusicForLayer2().dispose();
+		currLevel.getPlayer().getMusicForLayer3().dispose();
 	}
 
 }
