@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.screens.PlayScreen;
 import com.game.levels.Level;
 
 public class Player implements InputProcessor
@@ -680,6 +681,7 @@ public class Player implements InputProcessor
 					canDoubleJump = false;
 				}
 				break;
+
 			case Keys.E: // if the E key is pressed, check whether the player is on a bubble tile
 				Bubble[] bub = currLevel.getBubbleArray();
 				
@@ -692,11 +694,13 @@ public class Player implements InputProcessor
 						// // if the player is in the same depth as the bubble, go shallower 
 						if((currentLayer - bub[i].getTargetDepth()) == 0) {
 							currentLayer--;
+              PlayScreen.currLevel.setCurrentLayer(currentLayer);
 							bub[i].setHasDepthChanged(false);
 						}
 						// if the player is on a level deeper than the bubble by 1, go deeper
 						else if((currentLayer - bub[i].getTargetDepth()) == -1) {
 							currentLayer++;
+              PlayScreen.currLevel.setCurrentLayer(currentLayer);
 							bub[i].setHasDepthChanged(true);
 							
 						}
