@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.levels.Level;
 
 public class Player implements InputProcessor
 {
@@ -26,6 +27,7 @@ public class Player implements InputProcessor
 	private Vector2 velocity = new Vector2(0, -1);
 	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
+	private Level currLevel;
 	
 	private int timesJumped = 0;
 	
@@ -35,7 +37,7 @@ public class Player implements InputProcessor
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean onObject, onObject2, onObject3;
+//	private boolean onObject, onObject2, onObject3;
 	private boolean victory, clingSoundPlayed;
 	
 	private PlayerState state;
@@ -70,9 +72,11 @@ public class Player implements InputProcessor
 	private Animation<TextureRegion> fallAnim;
 	/* ================================== */
 	
-	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
+	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, Level level)
 	{
 		this.collisionLayer = collisionLayer;
+		this.currLevel = level;
+		
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
 		this.healthPoints = 2;
@@ -483,45 +487,18 @@ public class Player implements InputProcessor
 
 				if(isFacingRight) 
 				{
-					onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-					onObject = onBubble;
-
-					onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-					onObject2 = onBubble2;
-
-					onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-					onObject3 = onBubble3;
-
 					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
 					victory = victoryTile;
 
 				}
 				else if(!isFacingRight)
 				{
-					onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-					onObject = onBubble;
-
-					onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-					onObject2 = onBubble2;
-
-					onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-					onObject3 = onBubble3;
-
 					victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
 					victory = victoryTile;
 
 				}
 				else
 				{
-					onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-					onObject = onBubble;
-
-					onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-					onObject2 = onBubble2;
-
-					onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-					onObject3 = onBubble3;
-
 					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 					victory = victoryTile;
 
@@ -700,23 +677,31 @@ public class Player implements InputProcessor
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;
-					canJump = false;
+					canDoubleJump = false;
 				}
 				break;
-			case Keys.E:
+			case Keys.E: // if the E key is pressed, check whether the player is on a bubble tile
+				Bubble[] bub = currLevel.getBubbleArray();
 				
-				//Testing the audio bit, just to see if itll actually play when I press something.
-
-				//currentLayer++;
-				if(onObject) 
-					currentLayer = 2;
-				
-				if(onObject2)
-					currentLayer = 3;
-				
-				if(onObject3)
-					currentLayer = 4;
-				
+				for(int i = 0; i < 4; i++) {
+					if(bub[i].bubbleCollision(this) == true) {
+						// if there is a collision, we want the pop animation (not idle), 
+						// so we set it false
+						bub[i].setIdle(false);
+						
+						// // if the player is in the same depth as the bubble, go shallower 
+						if((currentLayer - bub[i].getTargetDepth()) == 0) {
+							currentLayer--;
+							bub[i].setHasDepthChanged(false);
+						}
+						// if the player is on a level deeper than the bubble by 1, go deeper
+						else if((currentLayer - bub[i].getTargetDepth()) == -1) {
+							currentLayer++;
+							bub[i].setHasDepthChanged(true);
+							
+						}
+					} // end of conditional check for bubble + player interaction
+				}
 				break;
 			}
 		}
@@ -748,8 +733,6 @@ public class Player implements InputProcessor
 					gravity = 9.8f;
 					hoverTimer = hoverTimer - 1;
 				}
-				
-					
 				break;
 			}
 		}		
@@ -758,7 +741,7 @@ public class Player implements InputProcessor
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		return false;
 	}
 
