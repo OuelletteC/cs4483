@@ -3,6 +3,8 @@ package com.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -29,15 +31,25 @@ public class Player implements InputProcessor
 	
 	private boolean canJump, canDoubleJump;
 	private boolean wallCling, collidedWithWall;
+	private boolean canHover;
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean onObject, onObject2;
+	private boolean onObject, onObject2, onObject3;
+	private boolean victory, clingSoundPlayed;
 	
 	private PlayerState state;
 	private int healthPoints;
 	private int currentLayer;
-	private int invincibleTimer;
+	private int invincibleTimer, hoverTimer;
+	
+	//Music is streamed from a place in storage to deal with the higher file sizes, unlike sounds. If you end up calling one to play, dispose of it when appropriate.
+	Music musicForLayer1 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Furtive.wav"));	
+	Music musicForLayer2 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Voice_001.wav"));	
+	Music musicForLayer3 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Cacophony.wav"));	
+	
+	Sound soundEffect;
+	
 	
 	private float stateTime = 0;
 	
@@ -46,11 +58,16 @@ public class Player implements InputProcessor
 	private Texture turnaround;
 	private Texture walking;
 	private Texture running;
+	private Texture clinging;
+	private Texture jumpNFall;
 	
 	private Animation<TextureRegion> idleAnim;
 	private Animation<TextureRegion> turnaroundAnim;
 	private Animation<TextureRegion> walkingAnim;
 	private Animation<TextureRegion> runningAnim;
+	private Animation<TextureRegion> clingAnim;
+	private Animation<TextureRegion> jumpAnim;
+	private Animation<TextureRegion> fallAnim;
 	/* ================================== */
 	
 	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
@@ -62,6 +79,7 @@ public class Player implements InputProcessor
 		
 		this.isInvincible = true;
 		this.invincibleTimer = 120;
+		this.hoverTimer = 80;
 		
 		this.x = spawnPoint.x;
 		this.y = spawnPoint.y;
@@ -82,11 +100,15 @@ public class Player implements InputProcessor
 		this.turnaround = new Texture("polarity_mc_turnarnound-sheet.png");
 		this.walking = new Texture("polarity_pc_walk-sheet.png");
 		this.running = new Texture("polarity_pc_run-bounce-sheet.png");
+		this.clinging = new Texture("Polarity_PC_Wall-Hang-Sheet.png");
+		this.jumpNFall = new Texture("Polarity_PC_Jump-Sheet.png");
 		
 		TextureRegion[][] idleFrames = TextureRegion.split(idle, idle.getWidth(), idle.getHeight());
 		TextureRegion[][] turnaroundFrames = TextureRegion.split(turnaround, (turnaround.getWidth() / 8), turnaround.getHeight());
 		TextureRegion[][] walkingFrames = TextureRegion.split(walking, (walking.getWidth() / 4), walking.getHeight());
 		TextureRegion[][] runningFrames = TextureRegion.split(running, (running.getWidth() / 8), running.getHeight());
+		TextureRegion[][] clingFrames = TextureRegion.split(clinging, clinging.getWidth(), clinging.getHeight());
+		TextureRegion[][] jumpNFallFrames = TextureRegion.split(jumpNFall, jumpNFall.getWidth() / 3, jumpNFall.getHeight());
 		
 		TextureRegion[] idleFrames2 = new TextureRegion[1 * 1];
 		int index = 0;
@@ -127,10 +149,23 @@ public class Player implements InputProcessor
 			}
 		}
 		
+		TextureRegion [] clingFrames2 = new TextureRegion[1];
+		clingFrames2[0] = clingFrames[0][0];
+		
+		TextureRegion[] jumpFrames = new TextureRegion[2];
+		jumpFrames[0] = jumpNFallFrames[0][0];
+		jumpFrames[1] = jumpNFallFrames[0][1];
+		
+		TextureRegion[] fallFrames = new TextureRegion[1];
+		fallFrames[0] = jumpNFallFrames[0][0];
+		
 		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
 		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);
 		this.walkingAnim = new Animation<TextureRegion>(0.1f, walkingFrames2);
 		this.runningAnim = new Animation<TextureRegion>(0.1f, runningFrames2);
+		this.clingAnim = new Animation<TextureRegion>(0.1f, clingFrames2);
+		this.jumpAnim = new Animation<TextureRegion>(0.1f, jumpFrames);
+		this.fallAnim = new Animation<TextureRegion>(0.1f, fallFrames);
 	}
 	
 	/*
@@ -151,16 +186,25 @@ public class Player implements InputProcessor
 			break;
 		case WALKING:
 			// play the walking animation
-			if(this.currentLayer <= 2) {
+			if(this.currentLayer <= 2) { // if the current layer is 2 or shallower, walk
 				anim = this.walkingAnim;
 			}
-			else {
+			else { // if the layer is 3 or deeper, RUN
 				anim = this.runningAnim;
 			}
 			break;
 		case JUMPING:
-			// play the spinning animation lol
-			anim = this.turnaroundAnim;
+			// play the jumping animation
+			anim = this.jumpAnim;
+			loop = false;
+			break;
+		case FALLING:
+			// play the falling animation
+			anim = this.fallAnim;
+			break;
+		case CLING:
+			// play the cling animation
+			anim = this.clingAnim;
 			break;
 		default:
 			anim = this.idleAnim;
@@ -211,10 +255,12 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
+		
+		// Decrement the invincibility timer if the player is invincible
 		if(isInvincible == true) {
 			invincibleTimer -= 1;
-			if(invincibleTimer <= 0) {
+			if(invincibleTimer <= 0) { // if the invincibility timer hits zero, the player is no longer invincible
 				isInvincible = false;
 			}
 		}
@@ -226,7 +272,13 @@ public class Player implements InputProcessor
 			this.invincibleTimer = 120;
 		}
 		
-		if(this.state.equals(PlayerState.DAMAGED) || this.state.equals(PlayerState.FALLING)) {
+		// if the player is in a DAMAGED state, they won't be able to be controlled
+		// so this handles the collision and returns control to the player after
+		// they touch down. Castlevania style.
+		
+		// SEE ALSO: The "else" block for this code below for collision if the player DOES
+		// have control
+		if(this.state.equals(PlayerState.DAMAGED)) {
 			//move on y
 			setY(getY() + velocity.y * delta);
 			
@@ -317,16 +369,29 @@ public class Player implements InputProcessor
 				// bottom left
 				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
 
+				death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				//bottom middle
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+				
 				//bottom right
 				if(!collidedY)
 					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+				
+				if(!death)
+					death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
 
 				// re-enable the jump once the player has touched down
 				canJump = collidedY;
+				
+				if(canJump)
+					timesJumped = 0;
+				
+				isDead = death;
 			}
 			// JUMPING
 			else if(velocity.y > 0) {
@@ -346,6 +411,14 @@ public class Player implements InputProcessor
 			{
 				setY(oldY); //We set it to the oldY because we technically dont move
 				velocity.y = 0;
+				
+				// this is for the wall-cling + jump workaround
+				// if this detects that the player has collided on Y with an X velocity of less
+				// than the movementSpeed (such as, half of the movementSpeed variable)
+				// then it will stop the player's x-velocity on collision.
+				if(Math.abs(velocity.x) < movementSpeed) {
+					velocity.x = 0;
+				}
 			}
 			// move on x
 			setX(getX() + velocity.x * delta);
@@ -396,8 +469,9 @@ public class Player implements InputProcessor
 			if(collidedX) //reaction to x collision
 			{
 				setX(oldX); //We set it to the oldX because we technically dont move
-				velocity.x = 0;
 			} //end of collision nightmare
+			
+			
 			
 			/**
 			 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
@@ -413,6 +487,12 @@ public class Player implements InputProcessor
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
 				
+				onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
+				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else if(!isFacingRight)
 			{
@@ -422,6 +502,12 @@ public class Player implements InputProcessor
 				onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
 				
+				onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
+				
+				victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else
 			{
@@ -430,6 +516,12 @@ public class Player implements InputProcessor
 				
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
 				onObject2 = onBubble2;
+				
+				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				onObject3 = onBubble3;
+				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				victory = victoryTile;
 				
 			}
 
@@ -449,8 +541,34 @@ public class Player implements InputProcessor
 				}
 			}
 			
+			/*
+			 * The block below handles music, as well as specific mechanics which activate upon entering layers. With the music, its important to dispose() of the assets when theyre done being used.
+			 * */
+		    
+			if(currentLayer == 1)
+			{
+			musicForLayer2.stop();
+			musicForLayer2.dispose();
+			musicForLayer3.stop();
+			musicForLayer3.dispose();
+		    musicForLayer1.setVolume(0.2f);
+		    musicForLayer1.setLooping(true);
+		    musicForLayer1.play();
+			}
+			
 			if(currentLayer > 1)
 			{
+				if(currentLayer == 2)
+				{
+				musicForLayer3.stop();
+				musicForLayer3.dispose();
+				musicForLayer1.stop();
+				musicForLayer1.dispose();
+			    musicForLayer2.setVolume(0.2f);
+			    musicForLayer2.setLooping(true);
+			    musicForLayer2.play();
+				}
+				
 				if(timesJumped < 2)
 				{
 					canDoubleJump = true;
@@ -460,25 +578,52 @@ public class Player implements InputProcessor
 					canDoubleJump = false;
 				}
 				
+				canHover = false;
+				
 			} //End of functions for layer 2 and above
 			
 			if(currentLayer > 2)
 			{
+				if(currentLayer == 3)
+				{
+					musicForLayer1.stop();
+					musicForLayer1.dispose();
+					musicForLayer2.stop();
+					musicForLayer2.dispose();
+					musicForLayer3.setVolume(0.2f);
+				    musicForLayer3.setLooping(true);
+				    musicForLayer3.play();
+				}
 				
 				if(collidedWithWall)
 				{
 					gravity = 0;
-					velocity.y = 0;
+					velocity.y = -10;
 					timesJumped = 0;
+					state = PlayerState.CLING;
+					
+					//credits to EdgardEdition from freesound for the wall cling sound!
+					if(!clingSoundPlayed && state == PlayerState.CLING)
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).play(0.5f);
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).dispose();
+					clingSoundPlayed = true;
 				}
 				else
 				{
 					gravity = 20 * 9.8f;
+					clingSoundPlayed = false;
 				}
+				
+				canHover = false;
+				
 						
 			}//end of functions for layer 3 and above
 			
-			
+			if(currentLayer > 3)
+			{
+				canHover = true;
+	
+			}//end of functions for layer 4 and above
 		}
 	}
 
@@ -518,12 +663,25 @@ public class Player implements InputProcessor
 					{
 						velocity.x = movementSpeed;
 					}
-					this.isFacingRight = true;	
+					this.isFacingRight = true;
 				}
 				break;
 			case Keys.UP:
+				if(state == PlayerState.CLING) {
+					if(isFacingRight == false) {
+						velocity.x = movementSpeed / 2;
+						this.isFacingRight = true;
+					}
+					else {
+						velocity.x = -(movementSpeed) / 2;
+						this.isFacingRight = false;
+					}
+				}
 				if(canJump) 
 				{
+					//All credits to dklon from opengameart.org for the jump sound!
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).play();
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).dispose();
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;			
@@ -531,6 +689,8 @@ public class Player implements InputProcessor
 				}
 				else if(!canJump && canDoubleJump)
 				{
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).play();
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).dispose();
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;
@@ -538,11 +698,19 @@ public class Player implements InputProcessor
 				}
 				break;
 			case Keys.E:
-				if(onObject) //!TODO This will, in future, only allow incremental shifts by one depending on the specific bubble that links to the specific layer
+				
+				//Testing the audio bit, just to see if itll actually play when I press something.
+
+				//currentLayer++;
+				if(onObject) 
 					currentLayer = 2;
 				
 				if(onObject2)
 					currentLayer = 3;
+				
+				if(onObject3)
+					currentLayer = 4;
+				
 				break;
 			}
 		}
@@ -556,14 +724,26 @@ public class Player implements InputProcessor
 			switch(keycode)
 			{
 			case Keys.LEFT:
-				velocity.x = 0;
+				if (velocity.x < 0) {
+					velocity.x = 0;
+				}
 				break;
 			case Keys.RIGHT:
-				velocity.x = 0;
+				if (velocity.x > 0) {
+					velocity.x = 0;
+				}
 				break;
 			case Keys.UP:
 				if(velocity.y > 0)
-					velocity.y = 0;	
+					velocity.y = 0;
+				
+				if(canHover && hoverTimer >= 0)
+				{
+					gravity = 9.8f;
+					hoverTimer = hoverTimer - 1;
+				}
+				
+					
 				break;
 			}
 		}		
@@ -633,6 +813,16 @@ public class Player implements InputProcessor
 		this.movementSpeed = speed;
 	}
 	
+	public boolean getVictory()
+	{
+		return victory;
+	}
+	
+	public void setVictory(boolean x)
+	{
+		this.victory = x;
+	}
+	
 	public float getSpeed()
 	{
 		return movementSpeed;
@@ -688,6 +878,11 @@ public class Player implements InputProcessor
 	
 	public float getY() {
 		return this.y;
+	}
+	
+	public boolean getCollidedX()
+	{
+		return collidedWithWall;
 	}
 	
 	public void setPosition(float theX, float theY) {
@@ -862,5 +1057,4 @@ public class Player implements InputProcessor
 		}
 		batch.setColor(1,1,1,1);
 	}
-
 }
