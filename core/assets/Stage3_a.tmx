@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="56" height="28" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" name="oppcastle-mod-tiles" tilewidth="32" tileheight="32" tilecount="165" columns="15">
-  <image source="../../../../oppcastle-mod-tiles.png" width="480" height="352"/>
+  <image source="../../../../../oppcastle-mod-tiles.png" width="480" height="352"/>
   <tile id="16">
    <properties>
     <property name="bubble3" value="true"/>
@@ -52,6 +52,11 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
+  <tile id="52">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
   <tile id="98">
    <properties>
     <property name="blocked" value=""/>
@@ -84,7 +89,7 @@
   </tile>
  </tileset>
  <tileset firstgid="166" name="bubbleTiles" tilewidth="32" tileheight="32" tilecount="165" columns="15">
-  <image source="../../../../oppcastle-mod-tiles.png" width="480" height="352"/>
+  <image source="../../../../../oppcastle-mod-tiles.png" width="480" height="352"/>
   <tile id="108">
    <properties>
     <property name="bubble" value=""/>
@@ -102,7 +107,7 @@
   </tile>
  </tileset>
  <tileset firstgid="331" name="Tileset__castle__" tilewidth="32" tileheight="32" tilecount="70" columns="7">
-  <image source="../../../../Tileset__castle__.png" width="224" height="320"/>
+  <image source="../../../../../Tileset__castle__.png" width="224" height="320"/>
   <tile id="27">
    <properties>
     <property name="bubble2" value=""/>
@@ -115,6 +120,9 @@
   </tile>
  </tileset>
  <layer name="Background" width="56" height="28">
+  <properties>
+   <property name="blocked" value=""/>
+  </properties>
   <data encoding="csv">
 19,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,
 19,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,
