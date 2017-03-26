@@ -39,8 +39,7 @@ public class PlayScreen implements Screen
 	
 	//Dialogue arrays\\
 	private String dialogueLayer2[] = {"I feel strange, as though I am somehow lighter.", "What images of ascension reveal themselves to me?", "I can reach new heights!"};
-	private String dialogueLayer3[] = {"All my life, I felt something gnawing at the back of my mind...", "Oh god, the eyes! The eyes!!", "Mercy, mercy! Such vistas of emptiness, show me no more!"};
-	
+	private String dialogueLayer3[] = {"All my life, I felt something gnawing at the back of my mind...", "Mercy, mercy! Such vistas of emptiness, show me no more!", "Oh god, the eyes! The eyes!!"};	
 	public static Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
