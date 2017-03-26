@@ -38,7 +38,6 @@ public class Player implements InputProcessor
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-//	private boolean onObject, onObject2, onObject3;
 	private boolean victory, clingSoundPlayed;
 	
 	private PlayerState state;
@@ -55,6 +54,7 @@ public class Player implements InputProcessor
 	
 	
 	private float stateTime = 0;
+	private float healthTime = 0;
 	
 	/* =========== ANIMATIONS =========== */
 	private Texture idle;
@@ -216,7 +216,7 @@ public class Player implements InputProcessor
 			break;
 		}
 		
-		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);
+		TextureRegion currentFrame = anim.getKeyFrame(stateTime, loop);	
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
 		
@@ -1005,64 +1005,21 @@ public class Player implements InputProcessor
 	
 	private void healthLowColours(Batch batch, TextureRegion currFrame) {
 		TextureRegion cf2 = currFrame;
-		float st = this.stateTime;
+		float st = this.healthTime;
 		
-		if(st % 20 < 5) {
-			batch.setColor(1.0f, 0, 0, 0.5f);
-			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					(((st % 10)) * 4.5f)); // red
-			batch.setColor(0, 1.0f, 0, 0.5f);
-			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-(((st % 10)) * 4.5f)); // green
-			batch.setColor(0, 0, 1.0f, 0.5f);
-			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					(((st % 10)) * 4.5f)); // blue
-		}
-		else if(st % 20 >= 5 && st % 20 < 10) {
-			batch.setColor(1.0f, 0, 0, 0.5f);
-			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-((st % 10) - 10) * 4.5f); // red
-			batch.setColor(0, 1.0f, 0, 0.5f);
-			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					((st % 10) - 10) * 4.5f); // green
-			batch.setColor(0, 0, 1.0f, 0.5f);
-			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-((st % 10) - 10) * 4.5f); // blue
-		}
-		else if(st % 20 >= 10 && st % 20 < 15) {
-			batch.setColor(1.0f, 0, 0, 0.5f);
-			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-((st % 10)) * 4.5f); // red
-			batch.setColor(0, 1.0f, 0, 0.5f);
-			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					((st % 10)) * 4.5f); // green
-			batch.setColor(0, 0, 1.0f, 0.5f);
-			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-((st % 10)) * 4.5f); // blue
-		}
-		else {
-			batch.setColor(1.0f, 0, 0, 0.5f);
-			batch.draw(cf2, this.x - 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					((st % 10) - 10) * 4.5f); // red
-			batch.setColor(0, 1.0f, 0, 0.5f);
-			batch.draw(cf2, this.x, this.y + 2, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					-((st % 10) - 10) * 4.5f); // green
-			batch.setColor(0, 0, 1.0f, 0.5f);
-			batch.draw(cf2, this.x + 2, this.y - 1, (this.width / 2), (this.height / 2), 
-					this.width, this.height, 1, 1, 
-					((st % 10) - 10) * 4.5f); // blue
-		}
+		// draw green
+		batch.setColor(0, 1, 0, 0.6f);
+		batch.draw(cf2, (float) (x + -(3 * Math.cos((float)st / 100)) ), 
+				(float) (y + (3 * Math.sin((float)st / 100)) ));
+		// draw red
+		batch.setColor(1, 0, 0, 0.6f);
+		batch.draw(cf2, (float)(x + (3 * Math.cos((float)st / 100)) ), 
+				(float)(y + (3 * Math.sin((float)st / 100)) ));
+		// draw blue
+		batch.setColor(0, 0, 1, 0.6f);
+		batch.draw(cf2, (float) (x + (3 * Math.cos((float)st / 100)) ), 
+				(float) (y + -(3 * Math.sin((float)st / 100)) ));
 		batch.setColor(1,1,1,1);
+		healthTime++;
 	}
 }
