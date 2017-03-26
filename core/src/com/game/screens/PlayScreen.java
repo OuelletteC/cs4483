@@ -49,6 +49,13 @@ public class PlayScreen implements Screen{
 		this.debug = debug;
 	}
 
+	public PlayScreen(boolean debug, int stageCount, Application game) {
+		this.debug = debug;
+		this.stageCount = stageCount;
+		
+		this.game = game;
+	}
+
 	@Override
 	public void render(float delta){
 
@@ -144,8 +151,9 @@ public class PlayScreen implements Screen{
 		
 		if(currLevel.getPlayer().isDead())
 		{
-
-			currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
+			//currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
+			dispose();
+			game.setScreen(new GameOverScreen(game));
 		}
 		
 		if(currLevel.getPlayer().getVictory()) //If the player encounters a 'victory tile,' change the current level the player is on
@@ -205,12 +213,6 @@ public class PlayScreen implements Screen{
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
-		
-		// Creating enemies here
-		//currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		//currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		//currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		
 	}
 	
 	@Override

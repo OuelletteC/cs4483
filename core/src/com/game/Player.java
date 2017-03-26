@@ -275,8 +275,15 @@ public class Player implements InputProcessor
 					&& isInvincible == false) {
 				this.state = PlayerState.DAMAGED;
 				damageRecoil();
-				this.isInvincible = true;
-				this.invincibleTimer = 120;
+				healthPoints--;
+				
+				if(healthPoints > 0) {
+					this.isInvincible = true;
+					this.invincibleTimer = 120;
+				}
+				else {
+					isDead = true;
+				}
 			}
 
 			// if the player is in a DAMAGED state, they won't be able to be controlled

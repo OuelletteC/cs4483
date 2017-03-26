@@ -98,32 +98,5 @@ public class Application extends Game { //As far as I can tell, this is our "mai
         camera.position.set(position);
 
         camera.update();
-    }
-
-    public Body createPlatform(float x, float y, int width, int height, boolean isStatic) {
-        Body pBody;
-        BodyDef def = new BodyDef();
-        
-
-        if(isStatic)
-            def.type = BodyDef.BodyType.StaticBody;
-        else
-            def.type = BodyDef.BodyType.DynamicBody;
-
-        def.position.set(x / PPM, y / PPM);
-        def.fixedRotation = true;
-        pBody = world.createBody(def);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2 / PPM, height / 2 / PPM);
-
-        pBody.createFixture(shape, 1.0f);
-        shape.dispose();
-        return pBody;
-    }
-    
-    
-    
-    
-    
+    }    
 }
