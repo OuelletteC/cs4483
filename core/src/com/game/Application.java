@@ -15,9 +15,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.game.screens.GameStartScreen;
 import com.game.screens.MainMenuScreen;
 import com.game.screens.PlayScreen;
 import static com.game.Constants.PPM;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.game.Constants.PPM;
 
@@ -40,9 +44,7 @@ public class Application extends Game { //As far as I can tell, this is our "mai
     public void create ()
     {
     	batch = new SpriteBatch();
-    	this.setScreen(new MainMenuScreen(this));
-
-    	//setScreen(new PlayScreen(DEBUG));
+	  	this.setScreen(new MainMenuScreen(this));
 
     }
     

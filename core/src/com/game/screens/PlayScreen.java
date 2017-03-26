@@ -1,5 +1,6 @@
 package com.game.screens;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,18 +15,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.game.*;
 import com.game.levels.Level;
 import com.game.levels.Stage1;
 import com.game.Application;
 
-public class PlayScreen implements Screen
-<<<<<<< HEAD
-{   
-	private TiledMap map;
-=======
-{
->>>>>>> daacbf95038a558905fdec0386b56f65934bab38
+public class PlayScreen implements Screen{
+
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	Application game;
@@ -33,13 +30,9 @@ public class PlayScreen implements Screen
 	private int numberOfEnemies = 2;
 	private int stageCount = 0;
 	
-<<<<<<< HEAD
-	private Enemy[] eArray = new Enemy[3]; // TODO: untangle the eArray further
-	Application game;
-=======
+
 	public Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
->>>>>>> daacbf95038a558905fdec0386b56f65934bab38
 	
 	private boolean debug;
 	private boolean init = true;
@@ -49,8 +42,8 @@ public class PlayScreen implements Screen
 	}
 
 	@Override
-	public void render(float delta)
-	{		
+	public void render(float delta){
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -100,10 +93,7 @@ public class PlayScreen implements Screen
 		
 		if(currLevel.getPlayer().isDead())
 		{
-<<<<<<< HEAD
-			player.setPosition(spawnPoint.x, spawnPoint.y);
-//			game.setScreen(new MainMenuScreen(game));
-=======
+
 			currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
 		}
 		
@@ -123,7 +113,7 @@ public class PlayScreen implements Screen
 			}
 
 			resize(1280, 730); //Honestly our code is pretty messy so a super cheesy way to 'update' the screen is to just resize it to the same thing it already is
->>>>>>> daacbf95038a558905fdec0386b56f65934bab38
+
 		}
 		
 	}

@@ -1,11 +1,14 @@
 package com.game.screens;
 
+import java.util.concurrent.TimeUnit;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.game.Application;
 
 public class MainMenuScreen implements Screen {
@@ -15,7 +18,6 @@ public class MainMenuScreen implements Screen {
 	private static final int EXIT_HEIGHT = 100;
 	private static final int NAME_WIDTH = 400;
 	private static final int NAME_HEIGHT = 200;
-	private boolean DEBUG = true;
 	
 	
 	Application game;
@@ -57,15 +59,11 @@ public class MainMenuScreen implements Screen {
 		if(Gdx.input.getX()>x && Gdx.input.getX()<x+PLAY_WIDTH && 728- Gdx.input.getY()>200 && 728- Gdx.input.getY()<200+PLAY_HEIGHT){
 		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
 		if(Gdx.input.isTouched()){
-			game.setScreen(new PlayScreen(DEBUG));
-			/* test when player died go back to main menu */
-//			game.setScreen(new MainMenuScreen(game));
+			game.setScreen(new GameStartScreen(game));
 		}
 		}
 		else{
 			game.batch.draw(playButtonInactive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-		
-	
 		}
 		/* set the exit button*/
 		int a =1280/2-EXIT_WIDTH/2;
