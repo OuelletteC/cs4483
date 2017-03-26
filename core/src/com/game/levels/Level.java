@@ -39,7 +39,6 @@ public class Level {
 	*/
 	
 	
-	protected int maxNumBubbles;
 	protected Bubble[] bubbleArray;
 	
 	public Level(TiledMap tm, Vector2 spawn) {
@@ -51,7 +50,12 @@ public class Level {
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		player.setCurrentLayer(1);
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
-
+    
+		this.bubbleArray = new Bubble[4]; // there will only be a max of four bubbles ever
+		
+		for(int i = 0; i < this.bubbleArray.length; i++) {
+			bubbleArray[i] = new Bubble(new Vector2(0,0), (TiledMapTileLayer) map.getLayers().get("Background"), i + 2);
+		}
 	}
 	
 	public void renderEnemies(Batch batch, boolean debug) {
@@ -78,11 +82,25 @@ public class Level {
 		}
 	}
 	
+	public void renderBubbles(Batch batch, boolean debug) {
+		for(int i = 0; i < this.bubbleArray.length; i++) {
+			bubbleArray[i].drawBubble(batch, debug);
+		}
+	}
+	
+	/*
+	 * Set Bubble #i's location to the location of Vector2
+	 */
+	public void setBubbleLocation(int i, Vector2 spawnPoint) {
+		bubbleArray[i].setX(spawnPoint.x);
+		bubbleArray[i].setY(spawnPoint.y);
+	}
+	
 	// WORK IN PROGRESS
 	public boolean bubbleCollision() {
 		boolean retVal = false;
 		
-		for(int i = 0; i < maxNumBubbles; i++) {
+		for(int i = 0; i < 4; i++) {
 			Bubble bubble = this.bubbleArray[i];
 			
 			float x1 = player.getX();
@@ -139,11 +157,7 @@ public class Level {
 	public Player getPlayer() {
 		return player;
 	}
-
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
-
+	
 	public int getLevelID() {
 		return levelID;
 	}

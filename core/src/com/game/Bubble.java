@@ -86,10 +86,10 @@ public class Bubble {
 		float n = stateTime % 10;
 		
 		if(n < 5) {
-			this.y = this.y + (n - 2);
+			this.y = this.y + ((n - 2)/30);
 		}
 		else { // n >= 5
-			this.y = this.y + (n - ((2 * ((n % 5) + 1) ) + 1)); // just... don't ask.
+			this.y = this.y + ((n - ((2 * ((n % 5) + 1) ) + 1)) / 30); // just... don't ask.
 		}
 	}
 

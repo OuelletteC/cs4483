@@ -32,6 +32,7 @@ public class PlayScreen implements Screen
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
 	private boolean debug;
+	private boolean init = true;
 	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -56,6 +57,7 @@ public class PlayScreen implements Screen
 		
 		// Space to render enemies
 		currLevel.renderEnemies(renderer.getBatch(), this.debug);
+		currLevel.renderBubbles(renderer.getBatch(), this.debug);
 		
 	    //Renders the player
 		currLevel.getPlayer().update(Gdx.graphics.getDeltaTime(), currLevel.getEnemyArray());
@@ -132,12 +134,6 @@ public class PlayScreen implements Screen
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
-		
-		// Creating enemies here
-		//currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		//currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		//currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		
 	}
 	
 	@Override
