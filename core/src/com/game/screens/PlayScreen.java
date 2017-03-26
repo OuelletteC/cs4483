@@ -13,8 +13,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.game.Application;
 import com.game.levels.Level;
 
-public class PlayScreen implements Screen
-{
+public class PlayScreen implements Screen{
+
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	Application game;
@@ -40,13 +40,18 @@ public class PlayScreen implements Screen
 	
 	private boolean debug;
 	
+	public PlayScreen(boolean debug, int stageCount) {
+		this.debug = debug;
+		this.stageCount=stageCount;
+	}
+	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
 	}
 
 	@Override
-	public void render(float delta)
-	{		
+	public void render(float delta){
+
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -139,6 +144,7 @@ public class PlayScreen implements Screen
 		
 		if(currLevel.getPlayer().isDead())
 		{
+
 			currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
 		}
 		
@@ -161,6 +167,7 @@ public class PlayScreen implements Screen
 			}
 
 			resize(1280, 730); //Honestly our code is pretty messy so a super cheesy way to 'update' the screen is to just resize it to the same thing it already is
+
 		}
 		
 	}

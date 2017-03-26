@@ -1,11 +1,14 @@
 package com.game.screens;
 
+import java.util.concurrent.TimeUnit;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.game.Application;
 
 public class MainMenuScreen implements Screen {
@@ -15,7 +18,9 @@ public class MainMenuScreen implements Screen {
 	private static final int EXIT_HEIGHT = 100;
 	private static final int NAME_WIDTH = 400;
 	private static final int NAME_HEIGHT = 200;
-	private boolean DEBUG = true;
+
+  private boolean DEBUG = true;
+
 
 
 	Application game;
@@ -79,15 +84,18 @@ public class MainMenuScreen implements Screen {
 		/* set the play button*/ 
 		int x =1280/2-PLAY_WIDTH/2;
 		if(Gdx.input.getX()>x && Gdx.input.getX()<x+PLAY_WIDTH && 728- Gdx.input.getY()>200 && 728- Gdx.input.getY()<200+PLAY_HEIGHT){
-			game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-			if(Gdx.input.isTouched()){
-				game.setScreen(new PlayScreen(DEBUG));
-			}
+
+		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
+		if(Gdx.input.isTouched()){
+			game.setScreen(new GameStartScreen(game));
+			/*test for stage start screen working*/
+//			game.setScreen(new StageStartScreen(game, 1));
+			/* test for game over screen working*/
+//			game.setScreen(new GameOverScreen(game));
+		}
 		}
 		else{
 			game.batch.draw(playButtonInactive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-
-
 		}
 		/* set the exit button*/
 		int a =1280/2-EXIT_WIDTH/2;
@@ -135,5 +143,4 @@ public class MainMenuScreen implements Screen {
 		// TODO Auto-generated method stub
 
 	}
-
 }
