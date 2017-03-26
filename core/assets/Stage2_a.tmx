@@ -49,6 +49,7 @@
   </tile>
   <tile id="93">
    <properties>
+    <property name="blocked" value=""/>
     <property name="death" value=""/>
    </properties>
   </tile>
@@ -84,7 +85,7 @@
   </tile>
  </tileset>
  <tileset firstgid="166" name="Tileset__castle__" tilewidth="32" tileheight="32" tilecount="70" columns="7">
-  <image source="../../../../Tileset__castle__.png" width="224" height="320"/>
+  <image source="../../../../../Tileset__castle__.png" width="224" height="320"/>
   <tile id="3">
    <properties>
     <property name="bubble2" value=""/>
