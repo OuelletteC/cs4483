@@ -39,7 +39,7 @@ public class GameStartScreen implements Screen{
 		game.batch.end();
 		//delay for 2 seconds
 		if(elapsed >2.0)
-        game.setScreen(new PlayScreen(DEBUG));
+        game.setScreen(new StageStartScreen(game,1));
 
 
 }

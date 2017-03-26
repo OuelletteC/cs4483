@@ -49,6 +49,11 @@ public class PlayScreen implements Screen{
 	
 	private boolean debug;
 	
+	public PlayScreen(boolean debug, int stageCount) {
+		this.debug = debug;
+		this.stageCount=stageCount;
+	}
+	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
 	}

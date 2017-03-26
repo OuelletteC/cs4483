@@ -6,17 +6,23 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.game.Application;
 
-public class GameOverScreen implements Screen{
+public class StageStartScreen implements Screen{
 
 	Application game;
-	Texture gameOverTxt;
-	private static final int GAME_OVER_WIDTH = 500;
-	private static final int GAME_OVER_HEIGHT = 200;
-
+	Texture stage1Txt;
+	Texture stage2Txt;
+	Texture stage3Txt;
+	private static final int STAGE_TXT_WIDTH = 500;
+	private static final int STAGE_TXT_HEIGHT = 200;
 	private float elapsed;
-	public GameOverScreen(Application game){
+	private int count;
+	private boolean DEBUG = true;
+	public StageStartScreen(Application game, int count){
 		this.game=game;
-		gameOverTxt = new Texture("game_over.png");
+		this.count=count;
+		stage1Txt = new Texture("stage1.png");
+		stage2Txt = new Texture("stage2.png");
+		stage3Txt = new Texture("stage3.png");
 	}
 
 
@@ -28,19 +34,48 @@ public class GameOverScreen implements Screen{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		game.batch.begin();
-		game.batch.draw(gameOverTxt, 1280/2-GAME_OVER_WIDTH/2, 269, GAME_OVER_WIDTH, GAME_OVER_HEIGHT);
+		switch(count){
+		case 1:	game.batch.draw(stage1Txt, 1280/2-STAGE_TXT_WIDTH/2, 269, STAGE_TXT_WIDTH, STAGE_TXT_HEIGHT);
+		        break;
+		case 2:	game.batch.draw(stage2Txt, 1280/2-STAGE_TXT_WIDTH/2, 269, STAGE_TXT_WIDTH, STAGE_TXT_HEIGHT);
+		        break;
+		case 3:	game.batch.draw(stage3Txt, 1280/2-STAGE_TXT_WIDTH/2, 269, STAGE_TXT_WIDTH, STAGE_TXT_HEIGHT);
+		        break;
+		}
+
 		game.batch.end();
 		//delay for 2 seconds
 		if(elapsed >2.0)
-        game.setScreen(new MainMenuScreen(game));
+        game.setScreen(new PlayScreen(DEBUG,count));
 
 
 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
