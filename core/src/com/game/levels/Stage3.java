@@ -8,9 +8,9 @@ import com.game.FlameEye;
 import com.game.Reptile;
 import com.game.Tentacles;
 
-public class Stage1 extends Level {
-
-	public Stage1(TiledMap tm, Vector2 spawn) {
+public class Stage3 extends Level {
+	
+	public Stage3(TiledMap tm, Vector2 spawn) {
 		super(tm, spawn);
 		layer1();
 		layer2();

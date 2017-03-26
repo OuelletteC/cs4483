@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.screens.PlayScreen;
 
 public class Player implements InputProcessor
 {
@@ -690,14 +691,19 @@ public class Player implements InputProcessor
 				//Testing the audio bit, just to see if itll actually play when I press something.
 
 				//currentLayer++;
-				if(onObject) 
+				if(onObject) { 
 					currentLayer = 2;
-				
-				if(onObject2)
+					PlayScreen.currLevel.setCurrentLayer(2);
+				}
+				if(onObject2) {
 					currentLayer = 3;
+					PlayScreen.currLevel.setCurrentLayer(3);
+				}
 				
-				if(onObject3)
+				if(onObject3) {
 					currentLayer = 4;
+					PlayScreen.currLevel.setCurrentLayer(4);
+				}
 				
 				break;
 			}

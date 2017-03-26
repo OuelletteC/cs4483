@@ -4,20 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.game.*;
-import com.game.levels.Level;
-import com.game.levels.Stage1;
 import com.game.Application;
+import com.game.levels.Level;
+import com.game.levels.Stage2;
 
 public class PlayScreen implements Screen
 {
@@ -26,9 +21,9 @@ public class PlayScreen implements Screen
 	Application game;
 	
 	private int numberOfEnemies = 2;
-	private int stageCount = 0;
+	private int stageCount = 1;
 	
-	public Level currLevel;
+	public static Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
 	private boolean debug;
@@ -126,7 +121,7 @@ public class PlayScreen implements Screen
 	public void show()
 	{
 		// create new Level object
-		currLevel = new Stage1(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
+		currLevel = new Stage2(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
 				Vector2(48, 100)); // create the level
 	
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer

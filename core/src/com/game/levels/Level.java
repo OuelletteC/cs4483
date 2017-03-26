@@ -19,7 +19,7 @@ public class Level {
 	public static Player player; // static because the enemy class needs to have access to player coordinates
 	
 	protected int levelID; // probably useful for connecting levels
-	protected int currentLayer = 1; // always starting out at the first layer
+	protected int currentLayer = 2; // always starting out at the first layer
 	protected int maxNumLayers; // integer that stores the highest number of layers for this map
 	
 	protected int maxEnemyCount; // integer with which to create the enemyArray, the maximum enemies in the level
