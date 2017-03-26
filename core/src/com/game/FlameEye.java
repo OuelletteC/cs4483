@@ -114,7 +114,7 @@ public class FlameEye extends Enemy {
 		this.hitHeight = 20;
 		
 		TextureRegion currentEye;
-		
+		batch.setColor(0,0,0,1);
 		// determine, based on the state, which animation to play for the eye
 		switch(this.state) {
 		case CLOSING:
@@ -142,6 +142,7 @@ public class FlameEye extends Enemy {
 		}
 		
 		batch.draw(currentFlame, this.x, this.y);
+		batch.setColor(1,1,1,1);
 		batch.draw(currentEye, this.x, this.y);
 	}
 
