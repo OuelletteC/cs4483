@@ -12,12 +12,6 @@ import com.game.screens.PlayScreen;
 
 public class Tentacles extends Enemy {
 	
-	private enum FlameState {
-		CLOSING, CLOSED, OPENING, OPEN
-	}
-	
-	private FlameState state;
-	
 	/* =========== ANIMATIONS =========== */
 	private Texture tentacleSheet;
 
@@ -29,10 +23,9 @@ public class Tentacles extends Enemy {
 			float moveSpeed, Level level) {
 		super(spawnPoint, collisionLayer, moveSpeed, level);
 		
-		this.state = FlameState.CLOSED;
-		
 		this.movementSpeed = 15;
 		this.gravity = 0;
+		this.velocity = new Vector2(0,0);
 		
 		loadTextures();
 	}
