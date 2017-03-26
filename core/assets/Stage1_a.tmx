@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="28" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" name="phase-2" tilewidth="32" tileheight="32" tilecount="350" columns="25">
-  <image source="phase-2.png" width="800" height="448"/>
+  <image source="Downloads/phase-2.png" width="800" height="448"/>
   <tile id="26">
    <properties>
     <property name="blocked" value="blocked"/>
@@ -24,10 +24,10 @@
   </tile>
  </tileset>
  <tileset firstgid="351" name="Village_Terrain" tilewidth="32" tileheight="32" tilecount="25" columns="5">
-  <image source="../../../../Village_Terrain.png" width="160" height="160"/>
+  <image source="platformer_graphics_IMakeGames/platformer_graphics_IMakeGames/OPP Assets/Tiles/Village/Village_Terrain.png" width="160" height="160"/>
  </tileset>
  <tileset firstgid="376" name="oppcastle-mod-tiles" tilewidth="32" tileheight="32" tilecount="165" columns="15">
-  <image source="../../../../oppcastle-mod-tiles.png" width="480" height="352"/>
+  <image source="oppcastle-mod-tiles.png" width="480" height="352"/>
  </tileset>
  <layer name="Background" width="48" height="28">
   <data encoding="csv">
