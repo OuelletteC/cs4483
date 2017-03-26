@@ -1,25 +1,17 @@
 package com.game.screens;
 
-import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
-import com.game.*;
-import com.game.levels.Level;
-import com.game.levels.Stage1;
 import com.game.Application;
 import com.game.levels.Level;
-import com.game.levels.Stage2;
 
 public class PlayScreen implements Screen
 {
@@ -200,7 +192,7 @@ public class PlayScreen implements Screen
 	public void show()
 	{
 		// create new Level object
-		currLevel = new Stage2(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
+		currLevel = new Level(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
 				Vector2(48, 100)); // create the level
 	
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
