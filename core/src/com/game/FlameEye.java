@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.game.levels.Level;
-import com.game.screens.PlayScreen;
 
 public class FlameEye extends Enemy {
 	
@@ -17,6 +16,9 @@ public class FlameEye extends Enemy {
 	}
 	
 	private FlameState state;
+	
+	private float eyeOpeningTime = 0; // variable to store the stateTime of the eye's animations
+	private float eyeClosingTime = 0; // variable to store the stateTime of the eye's animations
 	
 	/* =========== ANIMATIONS =========== */
 	private Texture flames;
@@ -85,9 +87,9 @@ public class FlameEye extends Enemy {
 		
 		this.flameAnim = new Animation<TextureRegion>(0.1f, flameFrames2);
 		this.eyeClosedAnim = new Animation<TextureRegion>(0.1f, eyeClosedFrames);
-		this.eyeOpeningAnim = new Animation<TextureRegion>(0.1f, eyeOpeningFrames);
+		this.eyeOpeningAnim = new Animation<TextureRegion>(4f, eyeOpeningFrames);
 		this.eyeOpenedAnim = new Animation<TextureRegion>(0.1f, eyeOpenFrames);
-		this.eyeClosingAnim = new Animation<TextureRegion>(0.1f, eyeClosingFrames);
+		this.eyeClosingAnim = new Animation<TextureRegion>(4f, eyeClosingFrames);
 	}
 
 	public void drawEnemy(Batch batch, boolean debug) {
@@ -99,7 +101,6 @@ public class FlameEye extends Enemy {
 		update(Gdx.graphics.getDeltaTime());
 		
 		anim = this.flameAnim;
-		anim2 = this.eyeOpenedAnim;
 		
 		TextureRegion currentFlame = anim.getKeyFrame(stateTime, loop);
 		this.width = currentFlame.getRegionWidth();
@@ -112,7 +113,33 @@ public class FlameEye extends Enemy {
 		this.hitWidth = 0;
 		this.hitHeight = 20;
 		
-		TextureRegion currentEye = anim2.getKeyFrame(stateTime, loop);
+		TextureRegion currentEye;
+		
+		// determine, based on the state, which animation to play for the eye
+		switch(this.state) {
+		case CLOSING:
+			anim2 = this.eyeClosingAnim;
+			currentEye = anim2.getKeyFrame(eyeClosingTime, false);
+			eyeClosingTime++;
+			break;
+		case CLOSED: // heh
+			anim2 = this.eyeClosedAnim;
+			currentEye = anim2.getKeyFrame(stateTime, loop);
+			break;
+		case OPEN:
+			anim2 = this.eyeOpenedAnim;
+			currentEye = anim2.getKeyFrame(stateTime, loop);
+			break;
+		case OPENING:
+			anim2 = this.eyeOpeningAnim;
+			currentEye = anim2.getKeyFrame(eyeOpeningTime, false);
+			eyeOpeningTime++;
+			break;
+		default:
+			anim2 = this.eyeOpenedAnim;
+			currentEye = anim2.getKeyFrame(stateTime, loop);
+			break;
+		}
 		
 		batch.draw(currentFlame, this.x, this.y);
 		batch.draw(currentEye, this.x, this.y);
@@ -120,34 +147,63 @@ public class FlameEye extends Enemy {
 
 	public void update(float delta) {
 		this.stateTime += delta;
+		//setY(getY() + velocity.y * delta);
 		
-		float playerX = currLevel.player.getX();
-		float playerY = currLevel.player.getY();
-		float enemyX = getX();
-		float enemyY = getY();
+		
+		// calculate vector from the middle of the player's sprite rather than the lower left edge
+		Vector2 v1 = new Vector2((currLevel.player.getX() + currLevel.player.getWidth()) / 2, 
+				(currLevel.player.getY() + currLevel.player.getHeight()) / 2);
+		// ditto for the flame-eye
+		Vector2 v2 = new Vector2((x + width) / 2, (y + height) / 2);
 		
 		float visionRange = 100;
 		
-		float distanceBetweenX = playerX - enemyX;
-		float distanceBetweenY = playerY - enemyY;
+		// calculate the x,y-distance between the player and the flame-eye 
+		Vector2 v3 = v1.sub(v2);
 		
-		if (distanceBetweenX < visionRange && distanceBetweenX > -visionRange) {
-			if (distanceBetweenX > 0) {
+		if (Math.abs(v3.x) < visionRange && Math.abs(v3.y) < visionRange) {
+			setX(getX() + velocity.x * delta);
+			setY((0.5f * (float)Math.sin(getX() / 10) + getY()) + velocity.y * delta);
+			
+			if(this.state.equals(FlameState.OPENING) || this.state.equals(FlameState.OPEN)) {
+				if(this.eyeOpeningAnim.isAnimationFinished(eyeOpeningTime)) {
+					this.state = FlameState.OPEN;
+					eyeOpeningTime = 0;
+				}
+			}
+			else {
+				this.state = FlameState.OPENING;
+			}
+			
+			if (v3.x > 0) {
 				velocity.x = movementSpeed;
 			}
 			else {
 				velocity.x = -movementSpeed;
 			}
 			
-			if(distanceBetweenY > 0) {
+			if(v3.y > 0) {
 				velocity.y = movementSpeed;
 			}
 			else {
 				velocity.y = -movementSpeed;
 			}
 		}
+		else {
+			velocity.x = 0;
+			velocity.y = 0;
+			if(this.state.equals(FlameState.CLOSING) || this.state.equals(FlameState.CLOSED)) {
+				if(this.eyeClosingAnim.isAnimationFinished(eyeClosingTime)) {
+					this.state = FlameState.CLOSED;
+					eyeClosingTime = 0;
+				}
+			}
+			else {
+				this.state = FlameState.CLOSING;
+			}
+		}
 		
-		super.collision(delta);
+		//super.collision(delta);
 		
 		// TODO: Implement behavior
 	}
