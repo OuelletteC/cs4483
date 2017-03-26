@@ -1,5 +1,7 @@
 package com.game.screens;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -31,12 +33,13 @@ public class PlayScreen implements Screen
 	private int stageCount = 2;
 	private int timer = 0;
 	
-	private boolean switchedToLayer2, switchedToLayer3;
+	private int dialogueCounter = 0;
+	
+	private boolean switchedToLayer2, switchedToLayer3, switchedToLayer4;
 	
 	//Dialogue arrays\\
 	private String dialogueLayer2[] = {"I feel strange, as though I am somehow lighter.", "What images of ascension reveal themselves to me?", "I can reach new heights!"};
-	private String dialogueLayer3[] = {"Oh god, the eyes! The eyes!!", "All my life, I felt something gnawing at the back of my mind...", "Mercy, mercy! Such vistas of emptiness, show me no more!"};
-	private String dialogueLayer4[] = {"Have I died...?", "A madness, tittering in my brain...", ""};
+	private String dialogueLayer3[] = {"All my life, I felt something gnawing at the back of my mind...", "Oh god, the eyes! The eyes!!", "Mercy, mercy! Such vistas of emptiness, show me no more!"};
 	
 	public Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
@@ -105,11 +108,14 @@ public class PlayScreen implements Screen
 			if(timer < 240)
 			{
 				timer+=1;
-			setDialogue(dialogueLayer2[0], 675, 390);
+			setDialogue(dialogueLayer2[dialogueCounter], 675, 390);
 			}
 			else
 			{
 				clearDialogue();
+				dialogueCounter++;
+				if(dialogueCounter > 2)
+					dialogueCounter = 0;
 				switchedToLayer2 = true;
 			}
 		}
@@ -126,16 +132,18 @@ public class PlayScreen implements Screen
 			if(timer < 200 && switchedToLayer3 == true)
 			{
 			timer+=1;
-			setDialogue(dialogueLayer3[0], 675, 390);
+			setDialogue(dialogueLayer3[dialogueCounter], 675, 390);
 			}
 			else
 			{
 				clearDialogue();
+				dialogueCounter++;
+				if(dialogueCounter > 2)
+					dialogueCounter = 0;
 				switchedToLayer3 = false;
+				switchedToLayer4 = true;
 			}
 		}
-
-		
 		
 		if(currLevel.getPlayer().isDead())
 		{
