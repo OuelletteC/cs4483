@@ -16,6 +16,8 @@ public class Stage1 extends Level {
 		layer2();
 		layer3();
 		layer4();
+		
+		setBubbleLocation(0, new Vector2(632, 96));
 	}
 	
 	public void layer1() {

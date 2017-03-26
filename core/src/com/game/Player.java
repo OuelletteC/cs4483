@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.game.screens.PlayScreen;
+import com.game.levels.Level;
 
 public class Player implements InputProcessor
 {
@@ -27,6 +28,7 @@ public class Player implements InputProcessor
 	private Vector2 velocity = new Vector2(0, -1);
 	private float movementSpeed = 125, gravity = 20 * 9.8f; //Movement speed and gravity vector upon the player
 	private TiledMapTileLayer collisionLayer;
+	private Level currLevel;
 	
 	private int timesJumped = 0;
 	
@@ -36,7 +38,7 @@ public class Player implements InputProcessor
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean onObject, onObject2, onObject3;
+//	private boolean onObject, onObject2, onObject3;
 	private boolean victory, clingSoundPlayed;
 	
 	private PlayerState state;
@@ -71,9 +73,11 @@ public class Player implements InputProcessor
 	private Animation<TextureRegion> fallAnim;
 	/* ================================== */
 	
-	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer)
+	public Player(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, Level level)
 	{
 		this.collisionLayer = collisionLayer;
+		this.currLevel = level;
+		
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
 		this.healthPoints = 2;
@@ -244,375 +248,366 @@ public class Player implements InputProcessor
 	}
 	
 	public void update(float delta, Enemy[] eAry) {
-		stateTime += delta; // update the stateTime based on the delta
-
-		velocity.y -= gravity * delta; //applies gravity to the y velocity for each unit of time (delta) that passes
-
-		//Objects have a terminal velocity when gravity is applied, so this handles that
-		if(velocity.y > movementSpeed)
-			velocity.y = movementSpeed;
-		else if(velocity.y < -movementSpeed)
-			velocity.y = -movementSpeed;
-
-		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
-		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
 		
-		// Decrement the invincibility timer if the player is invincible
-		if(isInvincible == true) {
-			invincibleTimer -= 1;
-			if(invincibleTimer <= 0) { // if the invincibility timer hits zero, the player is no longer invincible
-				isInvincible = false;
+		try {
+			stateTime += delta; // update the stateTime based on the delta
+
+			velocity.y -= gravity * delta; //applies gravity to the y velocity for each unit of time (delta) that passes
+
+			//Objects have a terminal velocity when gravity is applied, so this handles that
+			if(velocity.y > movementSpeed)
+				velocity.y = movementSpeed;
+			else if(velocity.y < -movementSpeed)
+				velocity.y = -movementSpeed;
+
+			//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
+			float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
+			boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
+
+			// Decrement the invincibility timer if the player is invincible
+			if(isInvincible == true) {
+				invincibleTimer -= 1;
+				if(invincibleTimer <= 0) { // if the invincibility timer hits zero, the player is no longer invincible
+					isInvincible = false;
+				}
 			}
-		}
-		if(checkEnemyCollision(eAry) == true && this.state != PlayerState.DAMAGED
-				&& isInvincible == false) {
-			this.state = PlayerState.DAMAGED;
-			damageRecoil();
-			this.isInvincible = true;
-			this.invincibleTimer = 120;
-		}
-		
-		// if the player is in a DAMAGED state, they won't be able to be controlled
-		// so this handles the collision and returns control to the player after
-		// they touch down. Castlevania style.
-		
-		// SEE ALSO: The "else" block for this code below for collision if the player DOES
-		// have control
-		if(this.state.equals(PlayerState.DAMAGED)) {
-			//move on y
-			setY(getY() + velocity.y * delta);
-			
-			if(velocity.y < 0) // moving downward
-			{
-				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
-				
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				
-				if(!death)
-					death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
-				
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");     
-				
-				if(!death)
-					death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");   
-				
-				// re-enable the jump once the player has touched down
-				canJump = collidedY;
-				
-				if(canJump)
-					timesJumped = 0;
-				
-				isDead = death;
-			}
-			else if(velocity.y > 0) // moving upwards
-			{
-				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight() )/ tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) (( getX() + getWidth() / 2 ) / tileWidth), (int) ( (getY() + getHeight())/ tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-			}
-			if(collidedY) //reaction to y collision
-			{
-				/* 
-				 * Once the player touches the ground, control should be restored
-				 * and the momentum should stop. To do this, we return the player
-				 * to the IDLE state, and set both x and y velocities to 0.
-				 */
-				setY(oldY);
-				setX(oldX);
-				velocity.y = 0;
-				velocity.x = 0;
-				this.state = PlayerState.IDLE;
+			if(checkEnemyCollision(eAry) == true && this.state != PlayerState.DAMAGED
+					&& isInvincible == false) {
+				this.state = PlayerState.DAMAGED;
+				damageRecoil();
+				this.isInvincible = true;
+				this.invincibleTimer = 120;
 			}
 
-			// move on x
-			setX(getX() + velocity.x * delta);
+			// if the player is in a DAMAGED state, they won't be able to be controlled
+			// so this handles the collision and returns control to the player after
+			// they touch down. Castlevania style.
 
-			//moving left
-			if(velocity.x < 0)
-			{
-				collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				
-				collidedWithWall = collidedX;
-			}
-			else if(velocity.x > 0) //moving right
-			{
-				collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				
-				collidedWithWall = collidedX;
-			}
+			// SEE ALSO: The "else" block for this code below for collision if the player DOES
+			// have control
+			if(this.state.equals(PlayerState.DAMAGED)) {
+				//move on y
+				setY(getY() + velocity.y * delta);
 
-			if(collidedX) //reaction to x collision
-			{
-				setX(oldX);
-				velocity.x = 0;
-			}
+				if(velocity.y < 0) // moving downward
+				{
+					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+					death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
 
-		}
-		else { // player is not currently in the damaged state
-			setY(getY() + velocity.y * delta);
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
 
-			// FALLING
-			if (velocity.y < 0) {
-				// bottom left
-				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!death)
+						death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
 
-				//bottom middle
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");     
 
-				//bottom right
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!death)
+						death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");   
 
-				// re-enable the jump once the player has touched down
-				canJump = collidedY;
-				
-				if(canJump)
-					timesJumped = 0;
-			}
-			// JUMPING
-			else if(velocity.y > 0) {
-				//top left
-				collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight() )/ tileHeight)).getTile().getProperties().containsKey("blocked");
+					// re-enable the jump once the player has touched down
+					canJump = collidedY;
 
-				//top middle
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) (( getX() + getWidth() / 2 ) / tileWidth), (int) ( (getY() + getHeight())/ tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(canJump)
+						timesJumped = 0;
 
-				//top right
-				if(!collidedY)
-					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-			}	
+					isDead = death;
+				}
+				else if(velocity.y > 0) // moving upwards
+				{
+					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight() )/ tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) (( getX() + getWidth() / 2 ) / tileWidth), (int) ( (getY() + getHeight())/ tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+				}
+				if(collidedY) //reaction to y collision
+				{
+					/* 
+					 * Once the player touches the ground, control should be restored
+					 * and the momentum should stop. To do this, we return the player
+					 * to the IDLE state, and set both x and y velocities to 0.
+					 */
+					setY(oldY);
+					setX(oldX);
+					velocity.y = 0;
+					velocity.x = 0;
+					this.state = PlayerState.IDLE;
+				}
 
-			if(collidedY) //reaction to y collision
-			{
-				setY(oldY); //We set it to the oldY because we technically dont move
-				velocity.y = 0;
-				
-				// this is for the wall-cling + jump workaround
-				// if this detects that the player has collided on Y with an X velocity of less
-				// than the movementSpeed (such as, half of the movementSpeed variable)
-				// then it will stop the player's x-velocity on collision.
-				if(Math.abs(velocity.x) < movementSpeed) {
+				// move on x
+				setX(getX() + velocity.x * delta);
+
+				//moving left
+				if(velocity.x < 0)
+				{
+					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					collidedWithWall = collidedX;
+				}
+				else if(velocity.x > 0) //moving right
+				{
+					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					collidedWithWall = collidedX;
+				}
+
+				if(collidedX) //reaction to x collision
+				{
+					setX(oldX);
 					velocity.x = 0;
 				}
-			}
-			// move on x
-			setX(getX() + velocity.x * delta);
 
-			//moving left
-			if(velocity.x < 0)
-			{
-				/* 
-				 * @ So here, we need to make a check for each of the tiles to the sides of the player. Because movement is omnidirectional
-				 * @ we are going to check each of the three tiles to the right, left, top, and bottom of the players current position.
+			}
+			else { // player is not currently in the damaged state
+				setY(getY() + velocity.y * delta);
+
+				// FALLING
+				if (velocity.y < 0) {
+					// bottom left
+					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					death = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+
+					//bottom middle
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					if(!death)
+						death = collisionLayer.getCell((int) ((getX() + getWidth() / 2 ) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+
+					//bottom right
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					if(!death)
+						death = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("death");
+
+					// re-enable the jump once the player has touched down
+					canJump = collidedY;
+
+					if(canJump)
+						timesJumped = 0;
+
+					isDead = death;
+				}
+				// JUMPING
+				else if(velocity.y > 0) {
+					//top left
+					collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight() )/ tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//top middle
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) (( getX() + getWidth() / 2 ) / tileWidth), (int) ( (getY() + getHeight())/ tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//top right
+					if(!collidedY)
+						collidedY = collisionLayer.getCell((int) (getX() / tileWidth), (int) ( (getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+				}	
+
+				if(collidedY) //reaction to y collision
+				{
+					setY(oldY); //We set it to the oldY because we technically dont move
+					velocity.y = 0;
+
+					// this is for the wall-cling + jump workaround
+					// if this detects that the player has collided on Y with an X velocity of less
+					// than the movementSpeed (such as, half of the movementSpeed variable)
+					// then it will stop the player's x-velocity on collision.
+					if(Math.abs(velocity.x) < movementSpeed) {
+						velocity.x = 0;
+					}
+				}
+				// move on x
+				setX(getX() + velocity.x * delta);
+
+				//moving left
+				if(velocity.x < 0)
+				{
+					/* 
+					 * @ So here, we need to make a check for each of the tiles to the sides of the player. Because movement is omnidirectional
+					 * @ we are going to check each of the three tiles to the right, left, top, and bottom of the players current position.
+					 * 
+					 * So the first line is a bit much...basically, we are going to get the cell which is at the position of the player, divided by the tile width.
+					 * This gives us values in relation to the actual tiled map. We then get the tile in that cell, and its properties, to check and see if it is a blocked tile
+					 * and thus must collide with the player.
+					 * */
+
+					//top left tile, if the tile containsKey, collidedX will be true (containsKey returns a boolean)
+					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//middle left tile
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//bottom left tile
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					collidedWithWall = collidedX;
+
+				}
+				else if(velocity.x > 0) //moving right
+				{
+
+					//top right
+					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//middle right. If it still hasnt collided, check if it does for this next tile
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					//bottom right
+					if(!collidedX)
+						collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
+
+					collidedWithWall = collidedX;
+				}
+
+				if(collidedX) //reaction to x collision
+				{
+					setX(oldX); //We set it to the oldX because we technically dont move
+				} //end of collision nightmare
+
+
+
+				/**
+				 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
+				 * which end of their hitbox to use. This is so they can activate bubbles with the 'E' key in the KeyDown() function. 
 				 * 
-				 * So the first line is a bit much...basically, we are going to get the cell which is at the position of the player, divided by the tile width.
-				 * This gives us values in relation to the actual tiled map. We then get the tile in that cell, and its properties, to check and see if it is a blocked tile
-				 * and thus must collide with the player.
+				 */
+
+				if(isFacingRight) 
+				{
+					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+					victory = victoryTile;
+
+				}
+				else if(!isFacingRight)
+				{
+					victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+					victory = victoryTile;
+
+				}
+				else
+				{
+					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+					victory = victoryTile;
+
+				}
+
+				// Update the PlayerState based on the resolution of the above 
+				if(velocity.x == 0 && velocity.y == 0) {
+					this.state = PlayerState.IDLE;
+				}
+				else { // if velocity.x != 0 || velocity.y != 0 
+					if (velocity.x < 0 || velocity.x > 0) {
+						this.state = PlayerState.WALKING;
+					}
+					if (velocity.y < 0) {
+						this.state = PlayerState.FALLING;
+					}
+					if (velocity.y > 0) {
+						this.state = PlayerState.JUMPING;
+					}
+				}
+
+				/*
+				 * The block below handles music, as well as specific mechanics which activate upon entering layers. With the music, its important to dispose() of the assets when theyre done being used.
 				 * */
 
-				//top left tile, if the tile containsKey, collidedX will be true (containsKey returns a boolean)
-				collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-
-				//middle left tile
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
-
-				//bottom left tile
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) (getX() / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				
-				collidedWithWall = collidedX;
-
-			}
-			else if(velocity.x > 0) //moving right
-			{
-
-				//top right
-				collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight()) / tileHeight)).getTile().getProperties().containsKey("blocked");
-
-				//middle right. If it still hasnt collided, check if it does for this next tile
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) ((getY() + getHeight() / 2 ) / tileHeight)).getTile().getProperties().containsKey("blocked");
-
-				//bottom right
-				if(!collidedX)
-					collidedX = collisionLayer.getCell((int) ((getX() + getWidth()) / tileWidth), (int) (getY() / tileHeight)).getTile().getProperties().containsKey("blocked");
-				
-				collidedWithWall = collidedX;
-			}
-
-			if(collidedX) //reaction to x collision
-			{
-				setX(oldX); //We set it to the oldX because we technically dont move
-			} //end of collision nightmare
-			
-			/**
-			 * While it looks the part, this block here is actually not a collision dealio. Instead, it checks to see if the player character is facing a bubble, and depending on their direction
-			 * which end of their hitbox to use. This is so they can activate bubbles with the 'E' key in the KeyDown() function. 
-			 * 
-			 */
-			
-			if(isFacingRight) 
-			{
-				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-				
-				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-				onObject2 = onBubble2;
-				
-				onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-				onObject3 = onBubble3;
-				
-				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
-				victory = victoryTile;
-				
-			}
-			else if(!isFacingRight)
-			{
-				onBubble = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-				
-				onBubble2 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-				onObject2 = onBubble2;
-				
-				onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-				onObject3 = onBubble3;
-				
-				victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
-				victory = victoryTile;
-				
-			}
-			else
-			{
-				onBubble = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble");
-				onObject = onBubble;
-				
-				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble2");
-				onObject2 = onBubble2;
-				
-				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-				onObject3 = onBubble3;
-				
-				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
-				victory = victoryTile;
-				
-			}
-
-			// Update the PlayerState based on the resolution of the above 
-			if(velocity.x == 0 && velocity.y == 0) {
-				this.state = PlayerState.IDLE;
-			}
-			else { // if velocity.x != 0 || velocity.y != 0 
-				if (velocity.x < 0 || velocity.x > 0) {
-					this.state = PlayerState.WALKING;
-				}
-				if (velocity.y < 0) {
-					this.state = PlayerState.FALLING;
-				}
-				if (velocity.y > 0) {
-					this.state = PlayerState.JUMPING;
-				}
-			}
-			
-			/*
-			 * The block below handles music, as well as specific mechanics which activate upon entering layers. With the music, its important to dispose() of the assets when theyre done being used.
-			 * */
-		    
-			if(currentLayer == 1)
-			{
-			musicForLayer2.stop();
-			musicForLayer2.dispose();
-			musicForLayer3.stop();
-			musicForLayer3.dispose();
-		    musicForLayer1.setVolume(0.2f);
-		    musicForLayer1.setLooping(true);
-		    musicForLayer1.play();
-			}
-			
-			if(currentLayer > 1)
-			{
-				if(currentLayer == 2)
+				if(currentLayer == 1)
 				{
-				musicForLayer3.stop();
-				musicForLayer3.dispose();
-				musicForLayer1.stop();
-				musicForLayer1.dispose();
-			    musicForLayer2.setVolume(0.2f);
-			    musicForLayer2.setLooping(true);
-			    musicForLayer2.play();
-				}
-				
-				if(timesJumped < 2)
-				{
-					canDoubleJump = true;
-				}
-				else
-				{
-					canDoubleJump = false;
-				}
-				
-				canHover = false;
-				
-			} //End of functions for layer 2 and above
-			
-			if(currentLayer > 2)
-			{
-				if(currentLayer == 3)
-				{
-					musicForLayer1.stop();
-					musicForLayer1.dispose();
 					musicForLayer2.stop();
 					musicForLayer2.dispose();
-					musicForLayer3.setVolume(0.2f);
-				    musicForLayer3.setLooping(true);
-				    musicForLayer3.play();
+					musicForLayer3.stop();
+					musicForLayer3.dispose();
+					musicForLayer1.setVolume(0.2f);
+					musicForLayer1.setLooping(true);
+					musicForLayer1.play();
 				}
-				
-				if(collidedWithWall)
+
+				if(currentLayer > 1)
 				{
-					gravity = 0;
-					velocity.y = -10;
-					timesJumped = 0;
-					state = PlayerState.CLING;
-					
-					//credits to EdgardEdition from freesound for the wall cling sound!
-					if(!clingSoundPlayed && state == PlayerState.CLING)
-					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).play(0.5f);
-					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).dispose();
-					clingSoundPlayed = true;
-				}
-				else
+					if(currentLayer == 2)
+					{
+						musicForLayer3.stop();
+						musicForLayer3.dispose();
+						musicForLayer1.stop();
+						musicForLayer1.dispose();
+						musicForLayer2.setVolume(0.2f);
+						musicForLayer2.setLooping(true);
+						musicForLayer2.play();
+					}
+
+					if(timesJumped < 2)
+					{
+						canDoubleJump = true;
+					}
+					else
+					{
+						canDoubleJump = false;
+					}
+
+					canHover = false;
+
+				} //End of functions for layer 2 and above
+
+				if(currentLayer > 2)
 				{
-					gravity = 20 * 9.8f;
-					clingSoundPlayed = false;
-				}
-				
-				canHover = false;
-				
-						
-			}//end of functions for layer 3 and above
-			
-			if(currentLayer > 3)
-			{
-				canHover = true;
-	
-			}//end of functions for layer 4 and above
+					if(currentLayer == 3)
+					{
+						musicForLayer1.stop();
+						musicForLayer1.dispose();
+						musicForLayer2.stop();
+						musicForLayer2.dispose();
+						musicForLayer3.setVolume(0.2f);
+						musicForLayer3.setLooping(true);
+						musicForLayer3.play();
+					}
+
+					if(collidedWithWall)
+					{
+						gravity = 0;
+						velocity.y = -10;
+						timesJumped = 0;
+						state = PlayerState.CLING;
+
+						//credits to EdgardEdition from freesound for the wall cling sound!
+						if(!clingSoundPlayed && state == PlayerState.CLING)
+							Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).play(0.5f);
+						Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).dispose();
+						clingSoundPlayed = true;
+					}
+					else
+					{
+						gravity = 20 * 9.8f;
+						clingSoundPlayed = false;
+					}
+
+					canHover = false;
+
+
+				}//end of functions for layer 3 and above
+
+				if(currentLayer > 3)
+				{
+					canHover = true;
+
+				}//end of functions for layer 4 and above
+			}
+		}
+		catch(NullPointerException e) {
+			isDead = true;
 		}
 	}
 
@@ -683,28 +678,34 @@ public class Player implements InputProcessor
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;
-					canJump = false;
+					canDoubleJump = false;
 				}
 				break;
-			case Keys.E:
-				
-				//Testing the audio bit, just to see if itll actually play when I press something.
 
-				//currentLayer++;
-				if(onObject) { 
-					currentLayer = 2;
-					PlayScreen.currLevel.setCurrentLayer(2);
-				}
-				if(onObject2) {
-					currentLayer = 3;
-					PlayScreen.currLevel.setCurrentLayer(3);
-				}
+			case Keys.E: // if the E key is pressed, check whether the player is on a bubble tile
+				Bubble[] bub = currLevel.getBubbleArray();
 				
-				if(onObject3) {
-					currentLayer = 4;
-					PlayScreen.currLevel.setCurrentLayer(4);
+				for(int i = 0; i < 4; i++) {
+					if(bub[i].bubbleCollision(this) == true) {
+						// if there is a collision, we want the pop animation (not idle), 
+						// so we set it false
+						bub[i].setIdle(false);
+						
+						// // if the player is in the same depth as the bubble, go shallower 
+						if((currentLayer - bub[i].getTargetDepth()) == 0) {
+							currentLayer--;
+              PlayScreen.currLevel.setCurrentLayer(currentLayer);
+							bub[i].setHasDepthChanged(false);
+						}
+						// if the player is on a level deeper than the bubble by 1, go deeper
+						else if((currentLayer - bub[i].getTargetDepth()) == -1) {
+							currentLayer++;
+              PlayScreen.currLevel.setCurrentLayer(currentLayer);
+							bub[i].setHasDepthChanged(true);
+							
+						}
+					} // end of conditional check for bubble + player interaction
 				}
-				
 				break;
 			}
 		}
@@ -736,8 +737,6 @@ public class Player implements InputProcessor
 					gravity = 9.8f;
 					hoverTimer = hoverTimer - 1;
 				}
-				
-					
 				break;
 			}
 		}		
@@ -746,7 +745,7 @@ public class Player implements InputProcessor
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		return false;
 	}
 
@@ -785,6 +784,21 @@ public class Player implements InputProcessor
 	public void setCollisionLayer(TiledMapTileLayer collisionLayer)
 	{
 		this.collisionLayer = collisionLayer;
+	}
+	
+	public Music getMusicForLayer1()
+	{
+		return musicForLayer1;
+	}
+	
+	public Music getMusicForLayer2()
+	{
+		return musicForLayer2;
+	}
+	
+	public Music getMusicForLayer3()
+	{
+		return musicForLayer3;
 	}
 	
 	public TiledMapTileLayer getCollisionLayer()
