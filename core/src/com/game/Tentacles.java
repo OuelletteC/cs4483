@@ -75,8 +75,8 @@ public class Tentacles extends Enemy {
 		hitXStart = x + 10;
 		hitYStart = y + 2;
 		
-		this.hitWidth = 0;
-		this.hitHeight = 22;
+		this.hitWidth = 35;
+		this.hitHeight = 100;
 		
 		batch.draw(currentTentacle, this.x, this.y);
 	}

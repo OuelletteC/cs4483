@@ -193,7 +193,7 @@ public class PlayScreen implements Screen
 	{
 		// create new Level object
 		currLevel = new Level(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
-				Vector2(48, 100)); // create the level
+				Vector2(48, 128)); // create the level
 	
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
