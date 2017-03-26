@@ -1,5 +1,7 @@
 package com.game.screens;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -7,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -14,6 +17,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.game.*;
 import com.game.levels.Level;
 import com.game.levels.Stage1;
@@ -26,13 +30,24 @@ public class PlayScreen implements Screen
 	Application game;
 	
 	private int numberOfEnemies = 2;
-	private int stageCount = 0;
+	private int stageCount = 2;
+	private int timer = 0;
+	
+	private int dialogueCounter = 0;
+	
+	private boolean switchedToLayer2, switchedToLayer3, switchedToLayer4;
+	
+	//Dialogue arrays\\
+	private String dialogueLayer2[] = {"I feel strange, as though I am somehow lighter.", "What images of ascension reveal themselves to me?", "I can reach new heights!"};
+	private String dialogueLayer3[] = {"All my life, I felt something gnawing at the back of my mind...", "Oh god, the eyes! The eyes!!", "Mercy, mercy! Such vistas of emptiness, show me no more!"};
 	
 	public Level currLevel;
 	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
+	BitmapFont dialogueFont = new BitmapFont();
+	SpriteBatch spriteBatch = new SpriteBatch();
+	
 	private boolean debug;
-	private boolean init = true;
 	
 	public PlayScreen(boolean debug) {
 		this.debug = debug;
@@ -57,7 +72,6 @@ public class PlayScreen implements Screen
 		
 		// Space to render enemies
 		currLevel.renderEnemies(renderer.getBatch(), this.debug);
-		currLevel.renderBubbles(renderer.getBatch(), this.debug);
 		
 	    //Renders the player
 		currLevel.getPlayer().update(Gdx.graphics.getDeltaTime(), currLevel.getEnemyArray());
@@ -69,6 +83,7 @@ public class PlayScreen implements Screen
 		
 		if(this.debug == true) {
 			BitmapFont font = new BitmapFont();
+			font.setColor(1, 1, 1, 1);
 			SpriteBatch spriteBatch = new SpriteBatch();
 			
 			spriteBatch.begin();
@@ -86,6 +101,48 @@ public class PlayScreen implements Screen
 				font.draw(spriteBatch, "IFRAMES = " + currLevel.getPlayer().getInvincibleTimer(), 600, 30);
 			}
 			spriteBatch.end();
+		}
+		
+		if(currLevel.getPlayer().getCurrentLayer() == 2)
+		{
+			if(timer < 240)
+			{
+				timer+=1;
+			setDialogue(dialogueLayer2[dialogueCounter], 675, 390);
+			}
+			else
+			{
+				clearDialogue();
+				dialogueCounter++;
+				if(dialogueCounter > 2)
+					dialogueCounter = 0;
+				switchedToLayer2 = true;
+			}
+		}
+		
+		if(currLevel.getPlayer().getCurrentLayer() == 3)
+		{
+			if(switchedToLayer2)
+			{
+				timer = 0;
+				switchedToLayer2 = false;
+				switchedToLayer3 = true;
+			}
+			
+			if(timer < 200 && switchedToLayer3 == true)
+			{
+			timer+=1;
+			setDialogue(dialogueLayer3[dialogueCounter], 675, 390);
+			}
+			else
+			{
+				clearDialogue();
+				dialogueCounter++;
+				if(dialogueCounter > 2)
+					dialogueCounter = 0;
+				switchedToLayer3 = false;
+				switchedToLayer4 = true;
+			}
 		}
 		
 		if(currLevel.getPlayer().isDead())
@@ -116,6 +173,18 @@ public class PlayScreen implements Screen
 		
 	}
 	
+	public void setDialogue(String str, int xPos, int yPos)
+	{	
+		dialogueFont.setColor(1, 1, 1, 1);
+		spriteBatch.begin();
+		dialogueFont.draw(spriteBatch, str, xPos, yPos);
+		spriteBatch.end();
+	}
+	
+	public void clearDialogue()
+	{
+		dialogueFont.setColor(1, 1, 1, 0);
+	}
 	
 	@Override
 	public void resize(int width, int height)
@@ -137,6 +206,12 @@ public class PlayScreen implements Screen
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
+		
+		// Creating enemies here
+		//currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
+		//currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
+		//currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
+		
 	}
 	
 	@Override
