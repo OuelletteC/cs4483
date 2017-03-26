@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.game.levels.Level;
 import com.game.screens.PlayScreen;
 
 public class FlameEye extends Enemy {
@@ -29,8 +30,8 @@ public class FlameEye extends Enemy {
 	/* ================================== */
 	
 	public FlameEye(Vector2 spawnPoint, TiledMapTileLayer collisionLayer,
-			float moveSpeed) {
-		super(spawnPoint, collisionLayer, moveSpeed);
+			float moveSpeed, Level level) {
+		super(spawnPoint, collisionLayer, moveSpeed, level);
 		
 		this.state = FlameState.CLOSED;
 		
@@ -41,11 +42,11 @@ public class FlameEye extends Enemy {
 	}
 	
 	private void loadTextures() {
-		this.flames = new Texture("flames-sheet.png");
-		this.eye = new Texture("eyeblink-sheet.png");
+		this.flames = new Texture("flames-sheet-resized.png");
+		this.eye = new Texture("eyeblink-sheet-resized.png");
 		
 		TextureRegion[][] flameFrames = TextureRegion.split(flames, (flames.getWidth() / 8), flames.getHeight());
-		TextureRegion[][] eyeFrames = TextureRegion.split(eye, (eye.getWidth() / 24), flames.getHeight());
+		TextureRegion[][] eyeFrames = TextureRegion.split(eye, (eye.getWidth() / 24), eye.getHeight());
 		
 		TextureRegion[] flameFrames2 = new TextureRegion[8 * 1];
 		int index = 0;
@@ -104,11 +105,12 @@ public class FlameEye extends Enemy {
 		this.width = currentFlame.getRegionWidth();
 		this.height = currentFlame.getRegionHeight();
 		
-		hitXStart = x + 8;
+		// optimized for their current width and height
+		hitXStart = x + 13;
 		hitYStart = y + 2;
 		
-		this.hitWidth = 24;
-		this.hitHeight = height - 2;
+		this.hitWidth = 0;
+		this.hitHeight = 20;
 		
 		TextureRegion currentEye = anim2.getKeyFrame(stateTime, loop);
 		
@@ -119,8 +121,8 @@ public class FlameEye extends Enemy {
 	public void update(float delta) {
 		this.stateTime += delta;
 		
-		float playerX = PlayScreen.player.getX();
-		float playerY = PlayScreen.player.getY();
+		float playerX = currLevel.player.getX();
+		float playerY = currLevel.player.getY();
 		float enemyX = getX();
 		float enemyY = getY();
 		
