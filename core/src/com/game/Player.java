@@ -3,6 +3,8 @@ package com.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -34,11 +36,20 @@ public class Player implements InputProcessor
 	private boolean isFacingRight;
 	private boolean isDead;
 	private boolean onObject, onObject2, onObject3;
+	private boolean victory, clingSoundPlayed;
 	
 	private PlayerState state;
 	private int healthPoints;
 	private int currentLayer;
 	private int invincibleTimer, hoverTimer;
+	
+	//Music is streamed from a place in storage to deal with the higher file sizes, unlike sounds. If you end up calling one to play, dispose of it when appropriate.
+	Music musicForLayer1 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Furtive.wav"));	
+	Music musicForLayer2 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Voice_001.wav"));	
+	Music musicForLayer3 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Cacophony.wav"));	
+	
+	Sound soundEffect;
+	
 	
 	private float stateTime = 0;
 	
@@ -244,7 +255,7 @@ public class Player implements InputProcessor
 
 		//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 		float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false;;
+		boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
 		
 		// Decrement the invincibility timer if the player is invincible
 		if(isInvincible == true) {
@@ -479,6 +490,9 @@ public class Player implements InputProcessor
 				onBubble3 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
 				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else if(!isFacingRight)
 			{
@@ -491,6 +505,9 @@ public class Player implements InputProcessor
 				onBubble3 = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
 				
+				victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
+				victory = victoryTile;
+				
 			}
 			else
 			{
@@ -502,6 +519,9 @@ public class Player implements InputProcessor
 				
 				onBubble2 = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
 				onObject3 = onBubble3;
+				
+				victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+				victory = victoryTile;
 				
 			}
 
@@ -521,8 +541,34 @@ public class Player implements InputProcessor
 				}
 			}
 			
+			/*
+			 * The block below handles music, as well as specific mechanics which activate upon entering layers. With the music, its important to dispose() of the assets when theyre done being used.
+			 * */
+		    
+			if(currentLayer == 1)
+			{
+			musicForLayer2.stop();
+			musicForLayer2.dispose();
+			musicForLayer3.stop();
+			musicForLayer3.dispose();
+		    musicForLayer1.setVolume(0.2f);
+		    musicForLayer1.setLooping(true);
+		    musicForLayer1.play();
+			}
+			
 			if(currentLayer > 1)
 			{
+				if(currentLayer == 2)
+				{
+				musicForLayer3.stop();
+				musicForLayer3.dispose();
+				musicForLayer1.stop();
+				musicForLayer1.dispose();
+			    musicForLayer2.setVolume(0.2f);
+			    musicForLayer2.setLooping(true);
+			    musicForLayer2.play();
+				}
+				
 				if(timesJumped < 2)
 				{
 					canDoubleJump = true;
@@ -532,10 +578,22 @@ public class Player implements InputProcessor
 					canDoubleJump = false;
 				}
 				
+				canHover = false;
+				
 			} //End of functions for layer 2 and above
 			
 			if(currentLayer > 2)
 			{
+				if(currentLayer == 3)
+				{
+					musicForLayer1.stop();
+					musicForLayer1.dispose();
+					musicForLayer2.stop();
+					musicForLayer2.dispose();
+					musicForLayer3.setVolume(0.2f);
+				    musicForLayer3.setLooping(true);
+				    musicForLayer3.play();
+				}
 				
 				if(collidedWithWall)
 				{
@@ -543,11 +601,21 @@ public class Player implements InputProcessor
 					velocity.y = -10;
 					timesJumped = 0;
 					state = PlayerState.CLING;
+					
+					//credits to EdgardEdition from freesound for the wall cling sound!
+					if(!clingSoundPlayed && state == PlayerState.CLING)
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).play(0.5f);
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/wallClingSound.wav")).dispose();
+					clingSoundPlayed = true;
 				}
 				else
 				{
 					gravity = 20 * 9.8f;
+					clingSoundPlayed = false;
 				}
+				
+				canHover = false;
+				
 						
 			}//end of functions for layer 3 and above
 			
@@ -611,6 +679,9 @@ public class Player implements InputProcessor
 				}
 				if(canJump) 
 				{
+					//All credits to dklon from opengameart.org for the jump sound!
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).play();
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).dispose();
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;			
@@ -618,6 +689,8 @@ public class Player implements InputProcessor
 				}
 				else if(!canJump && canDoubleJump)
 				{
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).play();
+					Gdx.audio.newSound(Gdx.files.internal("soundAssets/jumpSound.wav")).dispose();
 					timesJumped++;
 					velocity.y = movementSpeed;
 					this.state = PlayerState.JUMPING;
@@ -626,6 +699,8 @@ public class Player implements InputProcessor
 				break;
 			case Keys.E:
 				
+				//Testing the audio bit, just to see if itll actually play when I press something.
+
 				//currentLayer++;
 				if(onObject) 
 					currentLayer = 2;
@@ -738,6 +813,16 @@ public class Player implements InputProcessor
 		this.movementSpeed = speed;
 	}
 	
+	public boolean getVictory()
+	{
+		return victory;
+	}
+	
+	public void setVictory(boolean x)
+	{
+		this.victory = x;
+	}
+	
 	public float getSpeed()
 	{
 		return movementSpeed;
@@ -793,6 +878,11 @@ public class Player implements InputProcessor
 	
 	public float getY() {
 		return this.y;
+	}
+	
+	public boolean getCollidedX()
+	{
+		return collidedWithWall;
 	}
 	
 	public void setPosition(float theX, float theY) {

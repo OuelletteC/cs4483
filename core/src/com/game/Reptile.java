@@ -9,9 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.game.levels.Level;
-import com.game.screens.PlayScreen;
 
-public class IntermediateEnemy extends Enemy {
+public class Reptile extends Enemy {
 	
 	private boolean isFacingRight;
 	
@@ -21,7 +20,7 @@ public class IntermediateEnemy extends Enemy {
 	private Animation<TextureRegion> walkingAnim;
 	/* ================================== */
 	
-	public IntermediateEnemy(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed, Level level) {
+	public Reptile(Vector2 spawnPoint, TiledMapTileLayer collisionLayer, float moveSpeed, Level level) {
 		super(spawnPoint, collisionLayer, moveSpeed, level);
 		
 		this.isFacingRight = true;
@@ -57,12 +56,12 @@ public class IntermediateEnemy extends Enemy {
 		this.width = currentFrame.getRegionWidth();
 		this.height = currentFrame.getRegionHeight();
 		
-		this.hitXStart = x + 4;
+		this.hitXStart = x + 12;
 		this.hitYStart = y + 1;
 		
 		// width + height of the hitbox
-		this.hitWidth = 51 - 4;
-		this.hitHeight = 25 - 1;
+		this.hitWidth = 38;
+		this.hitHeight = 22;
 		
 		if(this.isFacingRight == true) {
 			if(!currentFrame.isFlipX()) {
@@ -79,44 +78,25 @@ public class IntermediateEnemy extends Enemy {
 	}
 
 	public void update(float delta) {
-		this.stateTime += delta;
+        this.stateTime += delta; 
 		
-		// Checking if the player is near
-		float playerX = currLevel.player.getX();
-		float playerY = currLevel.player.getY();
-		float enemyX = getX();
-		float enemyY = getY();
-		int visionRange = 80;
-		float distanceBetween = playerX - enemyX;
-		
-		if (distanceBetween < visionRange && distanceBetween > -visionRange) {
-			if (distanceBetween > 0) {
-				velocity.x = movementSpeed;
-			}
-			else {
-				velocity.x = -movementSpeed;
-			}
-		}
-		else {
-        
-	        // Movement for basic AI (move x steps right, then x steps left)
-	        // Direction set to true for moving right and false for moving left
-	        if (isFacingRight) {
-	        	velocity.x = movementSpeed;
-	        	if (getX() > spawn.x + 160) {
-	        		isFacingRight = false;
-	        	}
-	        }
-	        else {
-	        	velocity.x = -movementSpeed;
-	        	if (getX() < spawn.x) {
-	        		isFacingRight = true;
-	        	}
-	        }
+        // Movement for basic AI (move x steps right, then x steps left)
+        // Direction set to true for moving right and false for moving left
+        if (isFacingRight) {
+        	velocity.x = movementSpeed;
+        	if (getX() > spawn.x + 160) {
+        		isFacingRight = false;
+        	}
+        }
+        else {
+        	velocity.x = -movementSpeed;
+        	if (getX() < spawn.x) {
+        		isFacingRight = true;
+        	}
+        }
        
-		}
-		
-		super.collision(delta);
+        super.collision(delta);
         
-	}	
+	}
+
 }

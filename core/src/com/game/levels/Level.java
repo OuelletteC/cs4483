@@ -19,16 +19,29 @@ public class Level {
 	public static Player player; // static because the enemy class needs to have access to player coordinates
 	
 	protected int levelID; // probably useful for connecting levels
-	protected int currentLayer;
+	protected int currentLayer = 1; // always starting out at the first layer
 	protected int maxNumLayers; // integer that stores the highest number of layers for this map
 	
 	protected int maxEnemyCount; // integer with which to create the enemyArray, the maximum enemies in the level
-	protected int initializedEnemies = 0; // number of initialized enemies, used for addEnemyToArray()
+	protected int initializedEnemiesLayer1 = 0; // number of initialized enemies, used for addEnemyToArray()
+	protected int initializedEnemiesLayer2 = 0;
+	protected int initializedEnemiesLayer3 = 0;
+	protected int initializedEnemiesLayer4 = 0;
+	protected Enemy[] enemyArrayLayer1;
+	protected Enemy[] enemyArrayLayer2;
+	protected Enemy[] enemyArrayLayer3;
+	protected Enemy[] enemyArrayLayer4;
+	
+	/*
+	protected int initializedEnemies = 0;
 	protected Enemy[] enemyArray;
+	protected int[] showEnemy;
+	*/
+	
 	
 	protected Bubble[] bubbleArray;
 	
-	public Level(TiledMap tm, Vector2 spawn, int enemyCount) {
+	public Level(TiledMap tm, Vector2 spawn) {
 		this.map = tm;
 		this.spawnPoint = spawn;
 		
@@ -37,9 +50,7 @@ public class Level {
 		player.setPosition(spawnPoint.x, spawnPoint.y); //Set spawn point
 		player.setCurrentLayer(1);
 		Gdx.input.setInputProcessor(player); //Tells the game that all user input comes from the player object
-		
-		this.maxEnemyCount = enemyCount;
-		this.enemyArray = new Enemy[this.maxEnemyCount];
+    
 		this.bubbleArray = new Bubble[4]; // there will only be a max of four bubbles ever
 		
 		for(int i = 0; i < this.bubbleArray.length; i++) {
@@ -47,20 +58,27 @@ public class Level {
 		}
 	}
 	
-	public void addEnemyToArray(Enemy enemy) {
-		try {
-			this.enemyArray[initializedEnemies] = enemy;
-		}
-		catch(Exception e) {
-			System.out.println("Enemy " + enemy + " could not be added to array");
-			initializedEnemies--; // enemy was not initialized
-		}
-		initializedEnemies++;
-	}
-	
 	public void renderEnemies(Batch batch, boolean debug) {
-		for(int i = 0; i < this.enemyArray.length; i++) {
-			enemyArray[i].drawEnemy(batch, debug);
+		
+		if (currentLayer == 1) {
+			for(int i = 0; i < enemyArrayLayer1.length; i++) {
+				enemyArrayLayer1[i].drawEnemy(batch, debug);
+			}
+		}
+		else if (currentLayer == 2) {
+			for(int i = 0; i < enemyArrayLayer2.length; i++) {
+				enemyArrayLayer2[i].drawEnemy(batch, debug);
+			}
+		}
+		else if (currentLayer == 3) {
+			for(int i = 0; i < enemyArrayLayer3.length; i++) {
+				enemyArrayLayer3[i].drawEnemy(batch, debug);
+			}
+		}
+		else {
+			for(int i = 0; i < enemyArrayLayer4.length; i++) {
+				enemyArrayLayer4[i].drawEnemy(batch, debug);
+			}
 		}
 	}
 	
@@ -171,22 +189,19 @@ public class Level {
 	public void setMaxEnemyCount(int maxEnemyCount) {
 		this.maxEnemyCount = maxEnemyCount;
 	}
-
-	public int getInitializedEnemies() {
-		return initializedEnemies;
-	}
-
-	public void setInitializedEnemies(int initializedEnemies) {
-		this.initializedEnemies = initializedEnemies;
-	}
-
+	
 	public Enemy[] getEnemyArray() {
-		return enemyArray;
+		if (currentLayer == 1) {
+			return enemyArrayLayer1; 
+		}
+		else if (currentLayer == 2) {
+			return enemyArrayLayer2; 
+		}
+		else if (currentLayer == 3) {
+			return enemyArrayLayer3; 
+		}
+		else {
+			return enemyArrayLayer4; 
+		}
 	}
-
-	public void setEnemyArray(Enemy[] enemyArray) {
-		this.enemyArray = enemyArray;
-	}
-	
-	
 }

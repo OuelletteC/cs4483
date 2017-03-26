@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -13,13 +16,20 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.game.*;
 import com.game.levels.Level;
+import com.game.levels.Stage1;
+import com.game.Application;
 
 public class PlayScreen implements Screen
 {
 	private OrthogonalTiledMapRenderer renderer;
 	private OrthographicCamera camera;
+	Application game;
+	
+	private int numberOfEnemies = 2;
+	private int stageCount = 0;
 	
 	public Level currLevel;
+	public String currStage[] = {"Stage1_a.tmx", "Stage2_a.tmx", "Stage3_a.tmx"};
 	
 	private boolean debug;
 	private boolean init = true;
@@ -70,6 +80,8 @@ public class PlayScreen implements Screen
 			font.draw(spriteBatch, "State = " + currLevel.getPlayer().getState(), 150, 30);
 			font.draw(spriteBatch, "HP = " + currLevel.getPlayer().getHealthPoints(), 300, 30);
 			font.draw(spriteBatch, "isInvincible = " + currLevel.getPlayer().isInvincible(), 450, 30);
+			font.draw(spriteBatch, "onWinTile = " + currLevel.getPlayer().getVictory(), 750, 30);
+			font.draw(spriteBatch, "isCollided = " + currLevel.getPlayer().getCollidedX(), 875, 30);
 			if(currLevel.getPlayer().isInvincible()) {
 				font.draw(spriteBatch, "IFRAMES = " + currLevel.getPlayer().getInvincibleTimer(), 600, 30);
 			}
@@ -81,7 +93,26 @@ public class PlayScreen implements Screen
 			currLevel.getPlayer().setPosition(currLevel.getSpawnPoint().x, currLevel.getSpawnPoint().y);
 		}
 		
+		if(currLevel.getPlayer().getVictory()) //If the player encounters a 'victory tile,' change the current level the player is on
+		{
+			stageCount++;
+			dispose();
+			show();
+			currLevel.getPlayer().setVelocity(new Vector2(0, 0));
+			
+			try 
+			{
+				Thread.sleep(600);
+			} catch (InterruptedException e) 
+			{
+				e.printStackTrace();
+			}
+
+			resize(1280, 730); //Honestly our code is pretty messy so a super cheesy way to 'update' the screen is to just resize it to the same thing it already is
+		}
+		
 	}
+	
 	
 	@Override
 	public void resize(int width, int height)
@@ -97,19 +128,12 @@ public class PlayScreen implements Screen
 	public void show()
 	{
 		// create new Level object
-		currLevel = new Level(new TmxMapLoader().load("Stage2_a.tmx"), new 
-				Vector2(24, 400), 3); // create the level
-		
+		currLevel = new Stage1(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
+				Vector2(48, 100)); // create the level
+	
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
-		
-		// Creating enemies here
-		currLevel.addEnemyToArray(new BasicEnemy(new Vector2(128,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		currLevel.addEnemyToArray(new IntermediateEnemy(new Vector2(256,160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		currLevel.addEnemyToArray(new FlameEye(new Vector2(160, 160), (TiledMapTileLayer) currLevel.getMap().getLayers().get("Background"), 50, currLevel));
-		
-		currLevel.setBubbleLocation(0, new Vector2(830, 350));
 	}
 	
 	@Override
@@ -132,6 +156,7 @@ public class PlayScreen implements Screen
 		// TODO Auto-generated method stub
 
 	}
+
 
 	@Override
 	public void dispose() 
