@@ -128,10 +128,9 @@ public class Level {
 		}
 		
 		// layer 4
-		/*
 		mapLayers = map.getLayers();
 		mapLayer = mapLayers.get("Layer4");
-		mapObjects = mapLayer.getObjects(); // returns null pointer if there are none
+		mapObjects = mapLayer.getObjects();
 		i = mapObjects.iterator();
 		
 		int numEnemiesL4 = mapObjects.getCount();
@@ -151,8 +150,8 @@ public class Level {
 				enemyArrayLayer4[initializedEnemiesLayer4++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 		}
-		*/
-		// layer 3
+		
+		// bubble Layer
 		mapLayers = map.getLayers();
 		mapLayer = mapLayers.get("BubbleLayer");
 		mapObjects = mapLayer.getObjects();
@@ -166,13 +165,20 @@ public class Level {
 			objWidth = (Float) obj.getProperties().get("x");
 			objHeight = (Float) obj.getProperties().get("y");
 			if (obj.getName().equals("BubbleL2")) {
-				bubbleArray[initializedBubbles++] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 2);
+				
+				bubbleArray[initializedBubbles] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 2);
+				setBubbleLocation(initializedBubbles, objWidth, objHeight);
+				initializedBubbles++;
 			}
 			else if (obj.getName().equals("BubbleL3")) {
-				bubbleArray[initializedBubbles++] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 3);
+				bubbleArray[initializedBubbles] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 3);
+				setBubbleLocation(initializedBubbles, objWidth, objHeight);
+				initializedBubbles++;
 			}
 			else if (obj.getName().equals("BubbleL4")) {
-				bubbleArray[initializedBubbles++] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 4);
+				bubbleArray[initializedBubbles] = new Bubble(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), this, 4);
+				setBubbleLocation(initializedBubbles, objWidth, objHeight);
+				initializedBubbles++;
 			}
 		}
 		
@@ -187,23 +193,36 @@ public class Level {
 			}
 		}
 		else if (currentLayer == 2) {
-			for(int i = 0; i < enemyArrayLayer2.length; i++) {
+			for(int i = 0; i < enemyArrayLayer1.length; i++) {
 				enemyArrayLayer1[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer2.length; i++) {
 				enemyArrayLayer2[i].drawEnemy(batch, debug);
 			}
 		}
 		else if (currentLayer == 3) {
-			for(int i = 0; i < enemyArrayLayer3.length; i++) {
+			
+			for(int i = 0; i < enemyArrayLayer1.length; i++) {
 				enemyArrayLayer1[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer2.length; i++) {
 				enemyArrayLayer2[i].drawEnemy(batch, debug);
-				enemyArrayLayer3[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer3.length; i++) {
+			enemyArrayLayer3[i].drawEnemy(batch, debug);
 			}
 		}
 		else {
-			for(int i = 0; i < enemyArrayLayer4.length; i++) {
+			for(int i = 0; i < enemyArrayLayer1.length; i++) {
 				enemyArrayLayer1[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer2.length; i++) {
 				enemyArrayLayer2[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer3.length; i++) {
 				enemyArrayLayer3[i].drawEnemy(batch, debug);
+			}
+			for(int i = 0; i < enemyArrayLayer4.length; i++) {
 				enemyArrayLayer4[i].drawEnemy(batch, debug);
 			}
 		}
@@ -218,9 +237,9 @@ public class Level {
 	/*
 	 * Set Bubble #i's location to the location of Vector2
 	 */
-	public void setBubbleLocation(int i, Vector2 point) {
-		bubbleArray[i].setX(point.x);
-		bubbleArray[i].setY(point.y);
+	public void setBubbleLocation(int i, float x, float y) {
+		bubbleArray[i].setX(x);
+		bubbleArray[i].setY(y);
 	}	
 	
 	public void disposeMap() {

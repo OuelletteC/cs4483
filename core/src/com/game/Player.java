@@ -685,7 +685,7 @@ public class Player implements InputProcessor
 			case Keys.E: // if the E key is pressed, check whether the player is on a bubble tile
 				Bubble[] bub = currLevel.getBubbleArray();
 				
-				for(int i = 0; i < 4; i++) {
+				for(int i = 0; i < bub.length; i++) {
 					if(bub[i].bubbleCollision(this) == true) {
 						// if there is a collision, we want the pop animation (not idle), 
 						// so we set it false

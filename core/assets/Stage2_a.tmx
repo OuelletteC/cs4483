@@ -185,6 +185,7 @@
   <object id="15" name="BubbleL3" gid="276" x="811" y="538" width="40" height="48"/>
   <object id="16" name="BubbleL2" gid="276" x="1177" y="695" width="40" height="48"/>
  </objectgroup>
+ <objectgroup name="Layer4"/>
  <objectgroup name="Layer1">
   <object id="5" name="Tentacle" gid="243" x="1181" y="882" width="64" height="128"/>
   <object id="6" name="Tentacle" gid="243" x="1346" y="881" width="64" height="128"/>
