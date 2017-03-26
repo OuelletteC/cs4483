@@ -183,7 +183,6 @@
   <object id="8" name="FlameEye" gid="418" x="637" y="654" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="Layer3">
-  <object id="9" name="Reptile" gid="401" x="356" y="541" width="64" height="32"/>
   <object id="10" name="FlameEye" gid="418" x="942" y="672" width="32" height="32"/>
   <object id="11" name="FlameEye" gid="418" x="1192" y="550" width="32" height="32"/>
   <object id="12" name="FlameEye" gid="418" x="76" y="506" width="32" height="32"/>

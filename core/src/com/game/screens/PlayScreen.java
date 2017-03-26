@@ -21,7 +21,7 @@ public class PlayScreen implements Screen{
 	
 	private int numberOfEnemies = 2;
 
-	private int stageCount = 1;
+	private int stageCount = 0;
   
 	private int timer = 0;
 	
