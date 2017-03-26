@@ -102,16 +102,16 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="236" name="enemy1" tilewidth="64" tileheight="32" tilecount="6" columns="6">
+ <tileset firstgid="236" name="enemy1" tilewidth="64" tileheight="32" tilecount="1" columns="6">
   <image source="enemy1.png" width="384" height="32"/>
  </tileset>
- <tileset firstgid="242" name="Tentacle-Sheet" tilewidth="64" tileheight="128" tilecount="10" columns="10">
+ <tileset firstgid="237" name="Tentacle-Sheet" tilewidth="64" tileheight="128" tilecount="1" columns="10">
   <image source="Tentacle-Sheet.png" width="640" height="128"/>
  </tileset>
- <tileset firstgid="252" name="eyeblink-sheet" tilewidth="32" tileheight="32" tilecount="24" columns="24">
+ <tileset firstgid="239" name="eyeblink-sheet" tilewidth="32" tileheight="32" tilecount="1" columns="24">
   <image source="eyeblink-sheet.png" width="768" height="32"/>
  </tileset>
- <tileset firstgid="276" name="bubble-sheet" tilewidth="40" tileheight="48" tilecount="7" columns="7">
+ <tileset firstgid="251" name="bubble-sheet" tilewidth="40" tileheight="48" tilecount="1" columns="7">
   <image source="bubble-sheet.png" width="288" height="48"/>
  </tileset>
  <layer name="Background" width="56" height="29">
@@ -150,7 +150,7 @@
 65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65,65
 </data>
  </layer>
- <layer name="Foreground" width="56" height="29" visible="0">
+ <layer name="Foreground" width="56" height="29">
   <data encoding="csv">
 65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -178,20 +178,20 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,65,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,65,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,50,65,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65,65,0,0,0,65,65,0,65,65,65,20,0,0,0,0,0,50,65,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65,65,0,0,0,65,65,0,65,65,65,50,0,0,0,65,0,65,65,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,65,65,0,0,0,65,65,0,65,65,65,0,0,0,0,0,0,0,0
 </data>
  </layer>
  <objectgroup name="BubbleLayer">
-  <object id="15" name="BubbleL3" gid="276" x="811" y="538" width="40" height="48"/>
-  <object id="16" name="BubbleL2" gid="276" x="1177" y="695" width="40" height="48"/>
+  <object id="15" name="BubbleL3" gid="251" x="811" y="538" width="40" height="48"/>
+  <object id="16" name="BubbleL2" gid="251" x="1177" y="695" width="40" height="48"/>
  </objectgroup>
  <objectgroup name="Layer4"/>
  <objectgroup name="Layer1">
-  <object id="5" name="Tentacle" gid="243" x="1184" y="909" width="64" height="128"/>
-  <object id="6" name="Tentacle" gid="243" x="1344" y="908" width="64" height="128"/>
-  <object id="7" name="Tentacle" gid="243" x="1442" y="912" width="64" height="128"/>
+  <object id="5" name="Tentacle" gid="238" x="1184" y="909" width="64" height="128"/>
+  <object id="6" name="Tentacle" gid="238" x="1344" y="908" width="64" height="128"/>
+  <object id="7" name="Tentacle" gid="238" x="1442" y="912" width="64" height="128"/>
  </objectgroup>
  <objectgroup name="Layer2">
   <object id="1" name="Reptile" gid="236" x="176" y="669" width="64" height="32"/>
@@ -199,11 +199,11 @@
   <object id="4" name="Reptile" gid="236" x="210" y="509" width="64" height="32"/>
  </objectgroup>
  <objectgroup name="Layer3">
-  <object id="8" name="Tentacle" gid="243" x="992" y="863" width="64" height="128"/>
-  <object id="9" name="FlameEye" gid="263" x="997" y="735" width="32" height="32"/>
-  <object id="10" name="FlameEye" gid="263" x="615" y="454" width="32" height="32"/>
-  <object id="11" name="FlameEye" gid="263" x="886" y="457" width="32" height="32"/>
-  <object id="12" name="FlameEye" gid="263" x="886" y="529" width="32" height="32"/>
+  <object id="8" name="Tentacle" gid="238" x="992" y="863" width="64" height="128"/>
+  <object id="9" name="FlameEye" gid="250" x="997" y="735" width="32" height="32"/>
+  <object id="10" name="FlameEye" gid="250" x="615" y="454" width="32" height="32"/>
+  <object id="11" name="FlameEye" gid="250" x="886" y="457" width="32" height="32"/>
+  <object id="12" name="FlameEye" gid="250" x="886" y="529" width="32" height="32"/>
   <object id="13" name="Reptile" gid="236" x="379" y="509" width="64" height="32"/>
  </objectgroup>
 </map>
