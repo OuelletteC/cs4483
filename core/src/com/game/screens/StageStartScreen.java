@@ -12,6 +12,7 @@ public class StageStartScreen implements Screen{
 	Texture stage1Txt;
 	Texture stage2Txt;
 	Texture stage3Txt;
+	Texture stage4Txt;
 	private static final int STAGE_TXT_WIDTH = 500;
 	private static final int STAGE_TXT_HEIGHT = 200;
 	private float elapsed;
@@ -20,9 +21,10 @@ public class StageStartScreen implements Screen{
 	public StageStartScreen(Application game, int count){
 		this.game=game;
 		this.count=count;
-		stage1Txt = new Texture("stage1.png");
-		stage2Txt = new Texture("stage2.png");
-		stage3Txt = new Texture("stage3.png");
+		stage1Txt = new Texture("GameStartScreens/Stage1.png");
+		stage2Txt = new Texture("GameStartScreens/Stage2.png");
+		stage3Txt = new Texture("GameStartScreens/Stage3.png");
+		stage4Txt = new Texture("GameStartScreens/Stage4.png");
 	}
 
 
@@ -41,6 +43,8 @@ public class StageStartScreen implements Screen{
 		        break;
 		case 3:	game.batch.draw(stage3Txt, 1280/2-STAGE_TXT_WIDTH/2, 269, STAGE_TXT_WIDTH, STAGE_TXT_HEIGHT);
 		        break;
+		case 4:	game.batch.draw(stage4Txt, 1280/2-STAGE_TXT_WIDTH/2, 269, STAGE_TXT_WIDTH, STAGE_TXT_HEIGHT);
+        		break;
 		}
 
 		game.batch.end();

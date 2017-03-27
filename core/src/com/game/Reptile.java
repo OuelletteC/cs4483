@@ -83,13 +83,13 @@ public class Reptile extends Enemy {
         // Movement for basic AI (move x steps right, then x steps left)
         // Direction set to true for moving right and false for moving left
         if (isFacingRight) {
-        	velocity.x = movementSpeed;
+        	velocity.x = movementSpeed * 2;
         	if (getX() > spawn.x + 160) {
         		isFacingRight = false;
         	}
         }
         else {
-        	velocity.x = -movementSpeed;
+        	velocity.x = -movementSpeed * 2;
         	if (getX() < spawn.x) {
         		isFacingRight = true;
         	}
