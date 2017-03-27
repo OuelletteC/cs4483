@@ -39,6 +39,8 @@ public class PlayScreen implements Screen{
 	
 	BitmapFont dialogueFont = new BitmapFont();
 	SpriteBatch spriteBatch = new SpriteBatch();
+	BitmapFont font = new BitmapFont();
+	
 	
 	private boolean debug;
 	
@@ -56,6 +58,7 @@ public class PlayScreen implements Screen{
 		this.stageCount = stageCount;
 		
 		this.game = game;
+		font.setColor(1, 1, 1, 1);
 	}
 
 	@Override
@@ -89,9 +92,6 @@ public class PlayScreen implements Screen{
 		renderer.getBatch().end();
 		
 		if(this.debug == true) {
-			BitmapFont font = new BitmapFont();
-			font.setColor(1, 1, 1, 1);
-			SpriteBatch spriteBatch = new SpriteBatch();
 			
 			spriteBatch.begin();
 			font.draw(spriteBatch, "x = " + currLevel.getPlayer().getX(), 10, 50);
@@ -107,29 +107,31 @@ public class PlayScreen implements Screen{
 			if(currLevel.getPlayer().isInvincible()) {
 				font.draw(spriteBatch, "IFRAMES = " + currLevel.getPlayer().getInvincibleTimer(), 600, 30);
 			}
-			
-			spriteBatch.draw(currLevel.getPlayer().healthPortrait, 30, 
-					(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
-			
-			// draw the number of health pips based on the player's currentHP
-			int playerHP = currLevel.getPlayer().getHealthPoints();
-			switch(playerHP) {
-			case(3):
-				spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 3) - 20, 
-						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
-			case(2):
-				spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 2) - 10 , 
-						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
-			case(1):
-				spriteBatch.draw(this.healthPip, 30 + healthPip.getWidth(), 
-						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
-				break;
-			default:
-				break;
-			}
-			
 			spriteBatch.end();
 		}
+		
+		spriteBatch.begin();
+		spriteBatch.draw(currLevel.getPlayer().healthPortrait, 30, 
+				(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+		
+		// draw the number of health pips based on the player's currentHP
+		int playerHP = currLevel.getPlayer().getHealthPoints();
+		switch(playerHP) {
+		case(3):
+			spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 3) - 20, 
+					(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+		case(2):
+			spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 2) - 10 , 
+					(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+		case(1):
+			spriteBatch.draw(this.healthPip, 30 + healthPip.getWidth(), 
+					(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+			break;
+		default:
+			break;
+		}
+		
+		spriteBatch.end();
 		
 		if(currLevel.getPlayer().getCurrentLayer() == 2)
 		{
@@ -234,7 +236,7 @@ public class PlayScreen implements Screen{
 		// create new Level object
 		currLevel = new Level(new TmxMapLoader().load(currStage[stageCount]), new  //currStage holds the string value of the current stage the player is on
 				Vector2(48, 128)); // create the level
-	
+		
 		renderer = new OrthogonalTiledMapRenderer(currLevel.getMap()); //Create the renderer
 		
 		camera = new OrthographicCamera(); //create a new camera focused on the map we are rendering
