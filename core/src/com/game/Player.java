@@ -64,6 +64,8 @@ public class Player implements InputProcessor
 	private Texture clinging;
 	private Texture jumpNFall;
 	
+	public TextureRegion healthPortrait; // this is intentionally public
+	
 	private Animation<TextureRegion> idleAnim;
 	private Animation<TextureRegion> turnaroundAnim;
 	private Animation<TextureRegion> walkingAnim;
@@ -163,6 +165,8 @@ public class Player implements InputProcessor
 		
 		TextureRegion[] fallFrames = new TextureRegion[1];
 		fallFrames[0] = jumpNFallFrames[0][0];
+		
+		healthPortrait = jumpNFallFrames[0][2];
 		
 		this.idleAnim = new Animation<TextureRegion>(0.1f, idleFrames2);
 		this.turnaroundAnim = new Animation<TextureRegion>(0.1f, turnaroundFrames2);

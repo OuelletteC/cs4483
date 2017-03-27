@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -26,6 +27,7 @@ public class PlayScreen implements Screen{
 	private int timer = 0;
 	
 	private int dialogueCounter = 0;
+	private Texture healthPip = new Texture("healthPip.png");
 	
 	private boolean switchedToLayer2, switchedToLayer3, switchedToLayer4;
 	
@@ -104,6 +106,27 @@ public class PlayScreen implements Screen{
 			if(currLevel.getPlayer().isInvincible()) {
 				font.draw(spriteBatch, "IFRAMES = " + currLevel.getPlayer().getInvincibleTimer(), 600, 30);
 			}
+			
+			spriteBatch.draw(currLevel.getPlayer().healthPortrait, 30, 
+					(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+			
+			// draw the number of health pips based on the player's currentHP
+			int playerHP = currLevel.getPlayer().getHealthPoints();
+			switch(playerHP) {
+			case(3):
+				spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 3) - 20, 
+						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+			case(2):
+				spriteBatch.draw(this.healthPip, 30 + (healthPip.getWidth() * 2) - 10 , 
+						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+			case(1):
+				spriteBatch.draw(this.healthPip, 30 + healthPip.getWidth(), 
+						(2 * camera.viewportHeight) - (2 * currLevel.getPlayer().healthPortrait.getRegionHeight()));
+				break;
+			default:
+				break;
+			}
+			
 			spriteBatch.end();
 		}
 		
