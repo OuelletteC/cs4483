@@ -45,9 +45,9 @@ public class Player implements InputProcessor
 	private int invincibleTimer;
 	
 	//Music is streamed from a place in storage to deal with the higher file sizes, unlike sounds. If you end up calling one to play, dispose of it when appropriate.
-	Music musicForLayer1 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Furtive.wav"));	
-	Music musicForLayer2 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Voice_001.wav"));	
-	Music musicForLayer3 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Cacophony.wav"));	
+	Music musicForLayer1 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Furtive.mp3"));	
+	Music musicForLayer2 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Voice_001.mp3"));	
+	Music musicForLayer3 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Cacophony.mp3"));	
 	
 	Sound soundEffect;
 	
