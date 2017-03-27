@@ -207,35 +207,16 @@ public class Level {
 			}
 		}
 		else if (currentLayer == 2) {
-			for(int i = 0; i < enemyArrayLayer1.length; i++) {
-				enemyArrayLayer1[i].drawEnemy(batch, debug);
-			}
 			for(int i = 0; i < enemyArrayLayer2.length; i++) {
 				enemyArrayLayer2[i].drawEnemy(batch, debug);
 			}
 		}
 		else if (currentLayer == 3) {
-			
-			for(int i = 0; i < enemyArrayLayer1.length; i++) {
-				enemyArrayLayer1[i].drawEnemy(batch, debug);
-			}
-			for(int i = 0; i < enemyArrayLayer2.length; i++) {
-				enemyArrayLayer2[i].drawEnemy(batch, debug);
-			}
 			for(int i = 0; i < enemyArrayLayer3.length; i++) {
 			enemyArrayLayer3[i].drawEnemy(batch, debug);
 			}
 		}
 		else {
-			for(int i = 0; i < enemyArrayLayer1.length; i++) {
-				enemyArrayLayer1[i].drawEnemy(batch, debug);
-			}
-			for(int i = 0; i < enemyArrayLayer2.length; i++) {
-				enemyArrayLayer2[i].drawEnemy(batch, debug);
-			}
-			for(int i = 0; i < enemyArrayLayer3.length; i++) {
-				enemyArrayLayer3[i].drawEnemy(batch, debug);
-			}
 			for(int i = 0; i < enemyArrayLayer4.length; i++) {
 				enemyArrayLayer4[i].drawEnemy(batch, debug);
 			}
