@@ -59,7 +59,14 @@ public class Level {
 		float objWidth, objHeight;
 		
 		int numEnemiesL1 = mapObjects.getCount();
+		int numEnemiesL2 = numEnemiesL1 + map.getLayers().get("Layer2").getObjects().getCount();
+		int numEnemiesL3 = numEnemiesL2 + map.getLayers().get("Layer3").getObjects().getCount();
+		int numEnemiesL4 = numEnemiesL3 + map.getLayers().get("Layer4").getObjects().getCount();
+		
 		enemyArrayLayer1 = new Enemy[numEnemiesL1];
+		enemyArrayLayer2 = new Enemy[numEnemiesL2];
+		enemyArrayLayer3 = new Enemy[numEnemiesL3];
+		enemyArrayLayer4 = new Enemy[numEnemiesL4];
 		
 		// layer 1
 		while (i.hasNext()) {
@@ -68,12 +75,21 @@ public class Level {
 			objHeight = (Float) obj.getProperties().get("y");
 			if (obj.getName().equals("Reptile")) {
 				enemyArrayLayer1[initializedEnemiesLayer1++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer2[initializedEnemiesLayer2++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("Tentacle")) {
 				enemyArrayLayer1[initializedEnemiesLayer1++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer2[initializedEnemiesLayer2++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("FlameEye")) {
 				enemyArrayLayer1[initializedEnemiesLayer1++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer2[initializedEnemiesLayer2++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 		}
 		
@@ -82,9 +98,6 @@ public class Level {
 		mapLayer = mapLayers.get("Layer2");
 		mapObjects = mapLayer.getObjects();
 		i = mapObjects.iterator();
-		
-		int numEnemiesL2 = mapObjects.getCount();
-		enemyArrayLayer2 = new Enemy[numEnemiesL2];
 
 		while (i.hasNext()) {
 			MapObject obj = i.next();
@@ -92,12 +105,18 @@ public class Level {
 			objHeight = (Float) obj.getProperties().get("y");
 			if (obj.getName().equals("Reptile")) {
 				enemyArrayLayer2[initializedEnemiesLayer2++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("Tentacle")) {
 				enemyArrayLayer2[initializedEnemiesLayer2++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("FlameEye")) {
 				enemyArrayLayer2[initializedEnemiesLayer2++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer3[initializedEnemiesLayer3++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 		}
 		
@@ -106,9 +125,6 @@ public class Level {
 		mapLayer = mapLayers.get("Layer3");
 		mapObjects = mapLayer.getObjects();
 		i = mapObjects.iterator();
-		
-		int numEnemiesL3 = mapObjects.getCount();
-		enemyArrayLayer3 = new Enemy[numEnemiesL3];
 
 		while (i.hasNext()) {
 			MapObject obj = i.next();
@@ -116,12 +132,15 @@ public class Level {
 			objHeight = (Float) obj.getProperties().get("y");
 			if (obj.getName().equals("Reptile")) {
 				enemyArrayLayer3[initializedEnemiesLayer3++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Reptile(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("Tentacle")) {
 				enemyArrayLayer3[initializedEnemiesLayer3++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new Tentacles(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 			else if (obj.getName().equals("FlameEye")) {
 				enemyArrayLayer3[initializedEnemiesLayer3++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
+				enemyArrayLayer4[initializedEnemiesLayer4++] = new FlameEye(new Vector2(objWidth, objHeight), (TiledMapTileLayer) map.getLayers().get("Background"), (float)10, this);
 			}
 		}
 		
@@ -130,9 +149,6 @@ public class Level {
 		mapLayer = mapLayers.get("Layer4");
 		mapObjects = mapLayer.getObjects();
 		i = mapObjects.iterator();
-		
-		int numEnemiesL4 = mapObjects.getCount();
-		enemyArrayLayer4 = new Enemy[numEnemiesL4];
 
 		while (i.hasNext()) {
 			MapObject obj = i.next();
