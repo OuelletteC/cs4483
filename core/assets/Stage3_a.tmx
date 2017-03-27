@@ -62,6 +62,11 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
+  <tile id="99">
+   <properties>
+    <property name="victory" value=""/>
+   </properties>
+  </tile>
   <tile id="100">
    <properties>
     <property name="blocked" value=""/>
@@ -72,6 +77,11 @@
     <property name="blocked" value=""/>
    </properties>
   </tile>
+  <tile id="114">
+   <properties>
+    <property name="victory" value=""/>
+   </properties>
+  </tile>
   <tile id="115">
    <properties>
     <property name="blocked" value=""/>
@@ -80,6 +90,11 @@
   <tile id="128">
    <properties>
     <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="129">
+   <properties>
+    <property name="victory" value=""/>
    </properties>
   </tile>
   <tile id="130">
