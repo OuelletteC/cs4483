@@ -65,6 +65,7 @@ public class PlayScreen implements Screen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		camera.position.set(currLevel.getPlayer().getX() + currLevel.getPlayer().getWidth() / 2, currLevel.getPlayer().getY() + currLevel.getPlayer().getHeight() / 2, 0);
+		fixBounds();
 		camera.update();
 		
 		renderer.setView(camera); //Tell the renderer to use the camera we made.
@@ -271,4 +272,27 @@ public class PlayScreen implements Screen{
 		currLevel.getPlayer().getMusicForLayer3().dispose();
 	}
 
+	/*
+	 * Method that constrains the camera to the actual map space, hiding the unsightly abyss from sight
+	 */
+	public void fixBounds() {
+	    // Horizontal
+	    if (camera.position.x < camera.viewportWidth / 2)
+	        camera.position.x = camera.viewportWidth / 2;
+	    else if (camera.position.x > (currLevel.getMap().getProperties().get("width", Integer.class) * 32) - camera.viewportWidth / 2)
+	        camera.position.x = (currLevel.getMap().getProperties().get("width", Integer.class) * 32) - camera.viewportWidth / 2;
+	    else
+	    	camera.position.x = currLevel.getPlayer().getX() + currLevel.getPlayer().getWidth() / 2;
+	    
+	    // Vertical
+	    if (camera.position.y < camera.viewportHeight / 2)
+	        camera.position.y = camera.viewportHeight / 2;
+	    else if (camera.position.y > (currLevel.getMap().getProperties().get("height", Integer.class) * 32) - camera.viewportHeight / 2)
+	        camera.position.y = (currLevel.getMap().getProperties().get("height", Integer.class) * 32) - camera.viewportHeight / 2;
+	    else
+	    	camera.position.y = currLevel.getPlayer().getY() + currLevel.getPlayer().getHeight() / 2;
+	    
+	    //camera.position.z = 0;
+	}
+	
 }
