@@ -34,7 +34,6 @@ public class Player implements InputProcessor
 	
 	private boolean canJump, canDoubleJump;
 	private boolean wallCling, collidedWithWall;
-	private boolean canHover;
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
@@ -82,7 +81,7 @@ public class Player implements InputProcessor
 		
 		this.state = PlayerState.IDLE; // initialize the state to idle, though this will likely update
 		this.isFacingRight = true; // initialize the facing to be to the right
-		this.healthPoints = 2;
+		this.healthPoints = 3;
 		
 		this.isInvincible = true;
 		this.invincibleTimer = 120;
@@ -569,8 +568,6 @@ public class Player implements InputProcessor
 						canDoubleJump = false;
 					}
 
-					canHover = false;
-
 				} //End of functions for layer 2 and above
 
 				if(currentLayer > 2)
@@ -605,16 +602,16 @@ public class Player implements InputProcessor
 						clingSoundPlayed = false;
 					}
 
-					canHover = false;
-
-
 				}//end of functions for layer 3 and above
 
 				if(currentLayer > 3)
+					{
+					gravity = 15 * 9.8f;
+					}
+				else
 				{
-					canHover = true;
-
-				}//end of functions for layer 4 and above
+					gravity = 20 * 9.8f;
+				} //end of functions for layer 4 and above
 			}
 		}
 		catch(NullPointerException e) {
@@ -742,12 +739,7 @@ public class Player implements InputProcessor
 			case Keys.UP:
 				if(velocity.y > 0)
 					velocity.y = 0;
-				
-				if(canHover && hoverTimer >= 0)
-				{
-					gravity = 9.8f;
-					hoverTimer = hoverTimer - 1;
-				}
+
 				break;
 			}
 		}		
