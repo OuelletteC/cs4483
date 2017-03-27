@@ -19,15 +19,13 @@ public class MainMenuScreen implements Screen {
 	private static final int NAME_WIDTH = 400;
 	private static final int NAME_HEIGHT = 200;
 
-  private boolean DEBUG = true;
+	private boolean DEBUG = true;
 
 
 
 	Application game;
-	Texture playButtonActive;
-	Texture playButtonInactive;
-	Texture exitButtonActive;
-	Texture exitButtonInactive;
+	Texture playButton;
+	Texture exitButton;
 	Texture gameName;
 	Texture background;
 	
@@ -36,10 +34,8 @@ public class MainMenuScreen implements Screen {
 
 	public MainMenuScreen(Application game){
 		this.game = game;
-		playButtonActive = new Texture("play_button_active.png");
-		playButtonInactive = new Texture("play_button_inactive.png");
-		exitButtonActive = new Texture("exit_button_active.png");
-		exitButtonInactive = new Texture("exit_button_inactive.png");
+		playButton = new Texture("play_button.png");
+		exitButton = new Texture("exit_button.png");
 		gameName = new Texture("game_title.png");
 		background = new Texture("Village_Terrain.png");
 
@@ -84,30 +80,34 @@ public class MainMenuScreen implements Screen {
 		/* set the play button*/ 
 		int x =1280/2-PLAY_WIDTH/2;
 		if(Gdx.input.getX()>x && Gdx.input.getX()<x+PLAY_WIDTH && 728- Gdx.input.getY()>200 && 728- Gdx.input.getY()<200+PLAY_HEIGHT){
-
-		game.batch.draw(playButtonActive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
-		if(Gdx.input.isTouched()){
-			game.setScreen(new GameStartScreen(game));
-			/*test for stage start screen working*/
-//			game.setScreen(new StageStartScreen(game, 1));
-			/* test for game over screen working*/
-//			game.setScreen(new GameOverScreen(game));
-		}
+			// rather than adding a whole new image, if the game detects that we're hovering over
+			// it draws the button in a different colour
+			game.batch.setColor(0,1,0,1);
+			game.batch.draw(playButton, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
+			game.batch.setColor(1,1,1,1);
+			
+			if(Gdx.input.isTouched()){
+				game.setScreen(new GameStartScreen(game));
+			}
 		}
 		else{
-			game.batch.draw(playButtonInactive, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
+			game.batch.draw(playButton, 1280/2-PLAY_WIDTH/2, 200, PLAY_WIDTH, PLAY_HEIGHT);
 		}
 		/* set the exit button*/
 		int a =1280/2-EXIT_WIDTH/2;
 		if(Gdx.input.getX()>a && Gdx.input.getX()<a+EXIT_WIDTH && 728-Gdx.input.getY()>100 && 728-Gdx.input.getY()<100+EXIT_HEIGHT){
-			game.batch.draw(exitButtonActive, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
+			// see comments under the play button
+			game.batch.setColor(0,1,0,1);
+			game.batch.draw(exitButton, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
+			game.batch.setColor(1,1,1,1);
+			
 			if(Gdx.input.isTouched()){
 				Gdx.app.exit();
 
 			}
 		}
 		else{
-			game.batch.draw(exitButtonInactive, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
+			game.batch.draw(exitButton, 1280/2-EXIT_WIDTH/2, 100, EXIT_WIDTH, EXIT_HEIGHT);
 
 		}
 		game.batch.end();
