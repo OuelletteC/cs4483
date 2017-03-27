@@ -37,12 +37,12 @@ public class Player implements InputProcessor
 	private boolean isInvincible;
 	private boolean isFacingRight;
 	private boolean isDead;
-	private boolean victory, clingSoundPlayed;
+	private boolean victory, clingSoundPlayed, prompt;
 	
 	private PlayerState state;
 	private int healthPoints;
 	private int currentLayer;
-	private int invincibleTimer, hoverTimer;
+	private int invincibleTimer;
 	
 	//Music is streamed from a place in storage to deal with the higher file sizes, unlike sounds. If you end up calling one to play, dispose of it when appropriate.
 	Music musicForLayer1 = Gdx.audio.newMusic(Gdx.files.internal("soundAssets/Furtive.wav"));	
@@ -85,7 +85,6 @@ public class Player implements InputProcessor
 		
 		this.isInvincible = true;
 		this.invincibleTimer = 120;
-		this.hoverTimer = 80;
 		
 		this.x = spawnPoint.x;
 		this.y = spawnPoint.y;
@@ -265,7 +264,7 @@ public class Player implements InputProcessor
 
 			//We need to handle what happens when the player collides with a tile, so we save the old position in case we need to move the player BACK if they collide with something
 			float oldX = getX(), oldY = getY(), tileWidth = collisionLayer.getTileWidth(), tileHeight = collisionLayer.getTileHeight();
-			boolean collidedX = false, collidedY = false, death = false, onBubble = false, onBubble2 = false, onBubble3 = false, victoryTile = false;
+			boolean collidedX = false, collidedY = false, death = false, victoryTile = false, promptTile = false;
 
 			// Decrement the invincibility timer if the player is invincible
 			if(isInvincible == true) {
@@ -500,18 +499,27 @@ public class Player implements InputProcessor
 				{
 					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
 					victory = victoryTile;
+					
+					promptTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) ) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("prompt");
+					prompt = promptTile;
 
 				}
 				else if(!isFacingRight)
 				{
 					victoryTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
 					victory = victoryTile;
+					
+					promptTile = collisionLayer.getCell((int) ( getX() / tileWidth ), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("prompt");
+					prompt = promptTile;
 
 				}
 				else
 				{
-					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("bubble3");
+					victoryTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("victory");
 					victory = victoryTile;
+					
+					promptTile = collisionLayer.getCell((int) ( ( (getX() + getWidth() ) / 2) / tileWidth), (int) ( ( getY() + ( getHeight() / 2 )  ) / tileHeight)).getTile().getProperties().containsKey("prompt");
+					prompt = promptTile;
 
 				}
 
@@ -802,6 +810,11 @@ public class Player implements InputProcessor
 	public Music getMusicForLayer3()
 	{
 		return musicForLayer3;
+	}
+	
+	public boolean getPromptTile()
+	{
+		return prompt;
 	}
 	
 	public TiledMapTileLayer getCollisionLayer()
