@@ -130,7 +130,6 @@
   <object id="11" name="Reptile" gid="582" x="431" y="734" width="64" height="32"/>
  </objectgroup>
  <objectgroup name="Layer2">
-  <object id="2" name="Tentacle" gid="573" x="642" y="540" width="64" height="128"/>
   <object id="3" name="Reptile" gid="582" x="2" y="536" width="64" height="32"/>
  </objectgroup>
  <objectgroup name="Layer3"/>
