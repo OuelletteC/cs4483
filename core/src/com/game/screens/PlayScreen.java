@@ -133,6 +133,15 @@ public class PlayScreen implements Screen{
 		
 		spriteBatch.end();
 		
+		if(currLevel.getPlayer().getPromptTile() && currLevel.getPlayer().getCurrentLayer() == 1)
+		{
+			setDialogue("Press E to shift", 675, 390);
+		}
+		else
+		{
+				clearDialogue();	
+		}
+		
 		if(currLevel.getPlayer().getCurrentLayer() == 2)
 		{
 			if(timer < 240)
@@ -190,8 +199,6 @@ public class PlayScreen implements Screen{
 			stageCount++;
 			dispose();
 			game.setScreen(new StageStartScreen(game, stageCount));
-			//show();
-			//currLevel.getPlayer().setVelocity(new Vector2(0, 0));
 			
 			try 
 			{
