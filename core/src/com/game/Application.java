@@ -28,7 +28,7 @@ import static com.game.Constants.PPM;
 public class Application extends Game { //As far as I can tell, this is our "main" that isnt quite called main
 
     public SpriteBatch batch;
-    private boolean DEBUG = false;
+    public boolean DEBUG = false;
 
    // private boolean DEBUG = true;
     TiledMap tiledMap;

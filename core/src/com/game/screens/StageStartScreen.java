@@ -17,10 +17,13 @@ public class StageStartScreen implements Screen{
 	private static final int STAGE_TXT_HEIGHT = 200;
 	private float elapsed;
 	private int count;
-	private boolean DEBUG = true;
+	public boolean DEBUG;
+	
 	public StageStartScreen(Application game, int count){
 		this.game=game;
 		this.count=count;
+		this.DEBUG = game.DEBUG;
+		
 		stage1Txt = new Texture("GameStartScreens/Stage1.png");
 		stage2Txt = new Texture("GameStartScreens/Stage2.png");
 		stage3Txt = new Texture("GameStartScreens/Stage3.png");
